@@ -1,0 +1,24 @@
+{% assign battery_available = true %}
+{% if trmnl.device.percent_charged == blank %}{% assign battery_available = false %}{% endif %}
+{% assign battery_pct = trmnl.device.percent_charged | default: 0 | plus: 0 | round: 0 %}
+{% if battery_pct < 0 %}{% assign battery_pct = 0 %}{% endif %}
+{% if battery_pct > 100 %}{% assign battery_pct = 100 %}{% endif %}
+{% assign show_percentage = true %}
+{% assign requested_percentage = trmnl.plugin_settings.custom_fields_values.include_percentage %}
+{% if requested_percentage == false or requested_percentage == "false" %}{% assign show_percentage = false %}{% endif %}
+{% assign battery_status = "Battery" %}
+{% if battery_available == false %}
+  {% assign battery_status = "No battery data" %}
+{% elsif battery_pct == 100 %}
+  {% assign battery_status = "Fully charged" %}
+{% elsif battery_pct < 15 %}
+  {% assign battery_status = "Low battery" %}
+{% endif %}
+
+{% template battery_graphic %}
+  <svg class="w--full h--auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 112 54" role="img" aria-label="Battery charge">
+    <rect x="3" y="3" width="100" height="48" rx="4" fill="none" stroke="currentColor" stroke-width="2" />
+    <rect x="105" y="18" width="5" height="18" rx="1" fill="none" stroke="currentColor" stroke-width="2" />
+    {% if available %}<rect x="7" y="7" width="{{ pct | times: 0.92 }}" height="40" rx="1" fill="currentColor" />{% endif %}
+  </svg>
+{% endtemplate %}

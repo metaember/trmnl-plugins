@@ -1,0 +1,65 @@
+---
+strategy: polling
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: get
+framework_version: 3.0.3
+serverless_language: node
+refresh_interval_floor:
+polling_url: https://openrouter.ai/api/v1/models
+polling_headers: ''
+polling_body:
+oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
+custom_fields:
+- keyname: sort_by
+  name: Sort models by
+  field_type: select
+  options:
+  - Newest added: newest
+  - Lowest blended token cost: cost
+  - Largest context window: context
+  default: newest
+  description: Cost sorting compares text-output models with known input and output token rates. It keeps the cheapest pricing variant of each model.
+- keyname: model_type
+  name: Model type
+  field_type: select
+  options:
+  - All model types: all
+  - Text only: text
+  - Vision chat (image input, text output): vision
+  - Image generation: image
+  - Audio input or output: audio
+  - Video generation: video
+  default: all
+  description: Based on the catalog's input and output modalities. Audio and vision filters can overlap.
+- keyname: added_within
+  name: Added to OpenRouter within
+  field_type: select
+  options:
+  - All dates: all
+  - Last 7 days: '7'
+  - Last 30 days: '30'
+  - Last 90 days: '90'
+  default: all
+  description: UTC calendar days including today. This is the catalog-added date, not necessarily the original model release date.
+- keyname: token_mix
+  name: Blended cost input/output mix
+  field_type: select
+  options:
+  - 75% input / 25% output (3 to 1): 3to1
+  - 50% input / 50% output (1 to 1): 1to1
+  - 90% input / 10% output (9 to 1): 9to1
+  default: 3to1
+  description: Weighted cost per 1M combined tokens. Default blend = (3 x input rate + output rate) / 4. Excludes media, search, request and cache charges.
+- keyname: author_bio
+  name: About This Plugin
+  field_type: author_bio
+  category: programming,news
+  description: Browse OpenRouter models by newest listing, blended token cost or context size. Filter by model type and listing age, and choose an input/output mix. No API key required. Prices are catalog rates, not a total usage quote.
+  github_url: https://github.com/metaember/trmnl-plugins/tree/main/openrouter-drops
+  learn_more_url: https://openrouter.ai/models?order=newest
+name: OpenRouter Drops
+description: New models, filters and token costs
+refresh_interval: 360

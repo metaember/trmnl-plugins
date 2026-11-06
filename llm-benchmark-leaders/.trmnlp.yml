@@ -1,0 +1,4 @@
+custom_fields:
+  leaderboard: gpqa_score
+variables:
+  trmnl: {}

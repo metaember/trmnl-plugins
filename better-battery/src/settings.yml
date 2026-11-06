@@ -1,0 +1,28 @@
+---
+strategy: static
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: get
+framework_version: 2.3.7
+serverless_language:
+refresh_interval_floor:
+polling_url: ''
+polling_headers: ''
+polling_body: ''
+custom_fields:
+- keyname: author_bio
+  name: About This Plugin
+  category: analytics,productivity
+  field_type: author_bio
+  description: Your TRMNL's current battery status, with a fancy battery.
+  email_address: trmnl@chrls.io
+  github_url: https://github.com/metaember/trmnl-plugins/tree/main/better-battery
+- keyname: include_percentage
+  field_type: boolean
+  name: Include Battery Percentage
+  description: Would you like to display the battery percentage?
+  default: true
+name: Better Battery
+description:
+refresh_interval: 15

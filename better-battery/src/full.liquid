@@ -1,0 +1,12 @@
+<div class="layout layout--col gap--small">
+  <div class="w--[60cqw]">
+    {% render "battery_graphic" with pct: battery_pct, available: battery_available %}
+  </div>
+  {% if show_percentage and battery_available %}<span class="value value--large value--tnums" data-fit-value="true">{{ battery_pct }}%</span>{% endif %}
+  <span class="label">{{ battery_status }}</span>
+</div>
+
+<div class="title_bar">
+  <span class="title">Better Battery</span>
+  <span class="instance">{% if show_percentage and battery_available %}{{ battery_pct }}%{% else %}Device{% endif %}</span>
+</div>

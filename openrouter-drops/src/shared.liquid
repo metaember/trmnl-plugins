@@ -1,0 +1,7 @@
+
+{% template empty_state %}
+  <div class="flex flex--col gap--small">
+    <span class="title title--base">{% if drops %}No matching models{% else %}Catalog unavailable{% endif %}</span>
+    <span class="description" data-clamp="3">{% if drops %}{{ drops.empty_message }}{% else %}OpenRouter did not return its model catalog. Try again after the next refresh.{% endif %}</span>
+  </div>
+{% endtemplate %}

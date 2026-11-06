@@ -1,0 +1,36 @@
+<div class="layout">
+  <table class="table" data-table-limit="true">
+    <thead>
+      <tr>
+        <th><span class="title">Model</span></th>
+        <th><span class="title">{{ leaderboard.short_label | default: "GPQA" }}</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if leaderboard %}
+        {% assign models = data %}
+      {% else %}
+        {% assign models = data | where: "gpqa_score" | sort: "gpqa_score" | reverse %}
+      {% endif %}
+      {% for model in models | limit: 4 %}
+      <tr>
+        <td><span class="label lg:hidden" data-clamp="1">{{ model.name | truncate: 24 | escape }}</span><span class="label hidden lg:block">{{ model.name | escape }}</span></td>
+        <td>
+          <span class="label">
+            {% if model.score_display %}
+              {{ model.score_display | remove: "%" }}
+            {% else %}
+              {{ model.gpqa_score | times:100 | round:1 }}
+            {% endif %}
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="title_bar">
+  <span class="title">LLM Leaders</span>
+  <span class="instance">{{ leaderboard.short_label | default: "GPQA" }}</span>
+</div>

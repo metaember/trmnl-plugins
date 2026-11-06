@@ -1,0 +1,23 @@
+<div class="layout layout--col gap--medium">
+  {% if drops.available %}
+    <span class="label label--inverted">{{ drops.heading }}</span>
+    {% for model in drops.models limit: 3 %}
+      <div class="item">
+        <div class="meta"><span class="index">{{ forloop.index }}</span></div>
+        <div class="content">
+          <span class="title title--small" data-clamp="2">{{ model.name | escape }}</span>
+          <span class="label label--small">Added {{ model.added_date }} · {{ model.context }} ctx</span>
+          <span class="label label--small">{% if drops.cost_mode %}{{ model.blended_price }} blend · {{ drops.mix_label }}{% else %}{{ model.input_price }} in / {{ model.output_price }} out{% endif %}</span>
+        </div>
+      </div>
+    {% endfor %}
+    <span class="label label--small" data-clamp="2">{{ drops.type_label }} · {{ drops.age_label }} · UTC</span>
+  {% else %}
+    {% render "empty_state" with drops: drops %}
+  {% endif %}
+</div>
+
+<div class="title_bar">
+  <span class="title">OpenRouter</span>
+  <span class="instance">USD / 1M</span>
+</div>

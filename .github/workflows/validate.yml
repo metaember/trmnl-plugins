@@ -1,0 +1,36 @@
+name: Validate plugins
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  TRMNLP_IMAGE: trmnl/trmnlp@sha256:5558373f96d84897c59bbfe435e0165c1ce99f4fe67de776f1d82c811fbde9fe
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [better-battery, llm-benchmark-leaders, openrouter-drops]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Lint
+        working-directory: ${{ matrix.module }}
+        run: docker run --rm -v "$PWD:/plugin" "$TRMNLP_IMAGE" lint
+      - name: Transform tests
+        working-directory: ${{ matrix.module }}
+        run: docker run --rm -v "$PWD:/plugin" --entrypoint sh "$TRMNLP_IMAGE" -c 'if ls tests/*_test.js >/dev/null 2>&1; then node --test tests/*_test.js; fi'
+      - name: Browser tests
+        working-directory: ${{ matrix.module }}
+        run: docker run --rm -v "$PWD:/plugin" "$TRMNLP_IMAGE" test --report report
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ matrix.module }}-screenshots
+          path: ${{ matrix.module }}/report/
+          retention-days: 7

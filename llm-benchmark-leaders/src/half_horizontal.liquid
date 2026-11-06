@@ -1,0 +1,54 @@
+<div class="layout">
+  <table class="table" data-table-limit="true">
+    <thead>
+      <tr>
+        <th><span class="title">Model</span></th>
+        <th class="portrait:hidden"><span class="title">Org</span></th>
+        <th class="portrait:hidden"><span class="title">Release</span></th>
+        <th><span class="title">{{ leaderboard.short_label | default: "GPQA" }}</span></th>
+        <th><span class="title">Context</span></th>
+        <th class="portrait:hidden"><span class="title">Input</span></th>
+        <th class="portrait:hidden"><span class="title">Output</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if leaderboard %}
+        {% assign models = data %}
+      {% else %}
+        {% assign models = data | where: "gpqa_score" | sort: "gpqa_score" | reverse %}
+      {% endif %}
+      {% for model in models | limit: 4 %}
+      <tr>
+        <td><span class="label">{{ model.name | slice: 0, 20 }}</span></td>
+        <td class="portrait:hidden"><span class="label">{{ model.organization | slice: 0, 16 | capitalize }}</span></td>
+        <td class="portrait:hidden"><span class="label">{{ model.release_date }}</span></td>
+        <td>
+          <span class="label">
+            {% if model.score_display %}
+              {{ model.score_display }}
+            {% else %}
+              {{ model.gpqa_score | times:100 | round:1 }}%
+            {% endif %}
+          </span>
+        </td>
+        <td><span class="label">{% if model.context %}{{ model.context | divided_by:1000 }} k{% else %}—{% endif %}</span></td>
+        <td class="portrait:hidden">
+          <span class="label">
+            {% if model.input_price %}$ {{ model.input_price | round: 2 }}{% else %}—{% endif %}
+          </span>
+        </td>
+        <td class="portrait:hidden">
+          <span class="label">
+            {% if model.output_price %}$ {{ model.output_price | round: 2 }}{% else %}—{% endif %}
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="title_bar">
+  <span class="title">LLM Leaders</span>
+  <span class="instance">{{ leaderboard.short_label | default: "GPQA" }}</span>
+</div>

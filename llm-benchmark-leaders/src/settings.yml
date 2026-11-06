@@ -1,0 +1,61 @@
+---
+strategy: polling
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: get
+framework_version: 2.3.7
+serverless_language: node
+refresh_interval_floor:
+polling_url: https://api.zeroeval.com/leaderboard/models/full?justCanonicals=true
+polling_headers: ''
+polling_body: ''
+oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
+oauth_authorize_url: ''
+oauth_token_url: ''
+oauth_scopes: ''
+oauth_scope_separator: ''
+oauth_refresh_url: ''
+oauth_auth_params: ''
+oauth_token_headers: ''
+oauth_token_site: ''
+oauth_token_params: ''
+oauth_token_request_auth_method: ''
+oauth_body_format: ''
+oauth_token_response_metadata: ''
+oauth_authorization_method: ''
+oauth_refresh_params: ''
+oauth_token_field_name: ''
+oauth_expiry_field_name: ''
+oauth_expiry_strategy: ''
+oauth_fixed_expiry_ms: ''
+custom_fields:
+- keyname: leaderboard
+  name: Leaderboard
+  field_type: select
+  description: Choose one benchmark or rotate a capability-diverse set daily.
+  options:
+  - GPQA Diamond: gpqa_score
+  - Rotate daily: rotate_daily
+  - BrowseComp: browsecomp_score
+  - Humanity's Last Exam: hle_score
+  - SWE-bench Pro: swe_bench_pro_score
+  - Toolathlon: toolathlon_score
+  - FrontierMath: frontiermath_score
+  - MMMU-Pro: mmmu_pro_score
+  - MCP Atlas: mcp_atlas_score
+  - ARC-AGI v2: arc_agi_v2_score
+  - MRCR v2: mrcr_v2_score
+  default: gpqa_score
+- keyname: author_bio
+  name: About This Plugin
+  field_type: author_bio
+  category: programming,productivity
+  description: Track leading LLMs across major benchmarks.
+  learn_more_url: https://llm-stats.com/
+  email_address: trmnl@chrls.io
+  github_url: https://github.com/metaember/trmnl-plugins/tree/main/llm-benchmark-leaders
+name: LLM Benchmark Leaders
+description:
+refresh_interval: 1440

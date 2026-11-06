@@ -1,0 +1,14 @@
+<div class="layout layout--col gap--small">
+  {% if drops.available %}
+    <span class="label label--small">{{ drops.sort_label }} · {{ drops.latest.added_date }}</span>
+    <span class="title title--base" data-clamp="2">{{ drops.latest.name | escape }}</span>
+    <span class="label label--small">{% if drops.cost_mode %}{{ drops.latest.blended_price }} blend · {{ drops.mix_label }}{% else %}{{ drops.latest.input_price }} in / {{ drops.latest.output_price }} out{% endif %}</span>
+  {% else %}
+    {% render "empty_state" with drops: drops %}
+  {% endif %}
+</div>
+
+<div class="title_bar">
+  <span class="title">OpenRouter</span>
+  <span class="instance">USD / 1M</span>
+</div>

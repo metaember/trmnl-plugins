@@ -1,0 +1,22 @@
+name: Bug report
+description: Report a problem with a plugin
+body:
+  - type: dropdown
+    id: module
+    attributes:
+      label: Plugin
+      options: [Better Battery, LLM Benchmark Leaders, OpenRouter Drops]
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: What happened?
+      description: Include expected behavior and steps to reproduce.
+    validations:
+      required: true
+  - type: textarea
+    id: display
+    attributes:
+      label: Display and settings
+      description: Device, orientation, layout, relevant settings, and a screenshot with private data removed.

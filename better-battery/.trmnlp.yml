@@ -1,0 +1,6 @@
+custom_fields:
+  include_percentage: 'true'
+variables:
+  trmnl:
+    device:
+      percent_charged: 85

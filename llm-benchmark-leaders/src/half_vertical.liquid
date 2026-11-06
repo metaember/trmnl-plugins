@@ -1,0 +1,39 @@
+<div class="layout">
+  <table class="table" data-table-limit="true">
+    <thead>
+      <tr>
+        <th><span class="title">Model</span></th>
+        <th><span class="title">{{ leaderboard.short_label | default: "GPQA" }}</span></th>
+        <th class="portrait:hidden"><span class="title">Context</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if leaderboard %}
+        {% assign models = data %}
+      {% else %}
+        {% assign models = data | where: "gpqa_score" | sort: "gpqa_score" | reverse %}
+      {% endif %}
+      {% for model in models | limit: 8 %}
+      <tr>
+        <td><span class="label lg:hidden" data-clamp="1">{{ model.name | truncate: 18 | escape }}</span><span class="label hidden lg:block">{{ model.name | escape }}</span></td>
+        <td>
+          <span class="label">
+            {% if model.score_display %}
+              {{ model.score_display | remove: "%" }}
+            {% else %}
+              {{ model.gpqa_score | times:100 | round:1 }}
+            {% endif %}
+          </span>
+        </td>
+        <td class="portrait:hidden"><span class="label">{% if model.context %}{{ model.context | divided_by:1000 }} k{% else %}—{% endif %}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="title_bar">
+  <img class="image" src="https://trmnl.com/images/plugins/trmnl--render.svg" />
+  <span class="title">{% if leaderboard.rotating %}Daily Rotation{% else %}LLM Benchmarks{% endif %}</span>
+  <span class="instance">{{ leaderboard.short_label | default: "GPQA" }} · {{ leaderboard.short_capability | default: "Reasoning" }}</span>
+</div>

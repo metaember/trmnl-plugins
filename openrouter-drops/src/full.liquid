@@ -1,0 +1,52 @@
+<div class="layout layout--col layout--top layout--left gap--small">
+  {% if drops.available %}
+    <div class="flex flex--row flex--between w--full gap--small">
+      <span class="title title--small">{{ drops.sort_label }}</span>
+      <span class="label label--small">{{ drops.count }} matches</span>
+    </div>
+    <span class="label label--small w--full">{{ drops.type_label }} · {{ drops.age_label }}{% if drops.cost_mode %} · {{ drops.mix_label }}{% endif %}</span>
+    <span class="label label--small w--full">Added dates in UTC · Token rates only; other charges may apply</span>
+    <div class="w--full grow h--0">
+      <table class="table" data-table-limit="true" data-table-max-height="auto" data-table-hidden-count="false">
+        <thead>
+          <tr>
+            <th><span class="label">Model / added</span></th>
+            <th class="pr--2"><span class="label portrait:hidden">Context</span><span class="label hidden portrait:block">Ctx</span></th>
+            {% if drops.cost_mode %}
+              <th><span class="label">Blend</span></th>
+            {% else %}
+              <th class="pr--2"><span class="label">Input</span></th>
+              <th><span class="label">Output</span></th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for model in drops.models %}
+            <tr>
+              <td>
+                <div class="flex flex--col flex--left gap--xsmall w--full">
+                  <span class="label w--full" data-clamp="1">{{ model.name | escape }}</span>
+                  <span class="label label--small">{{ model.added_date }}</span>
+                </div>
+              </td>
+              <td class="pr--2"><span class="label">{{ model.context }}</span></td>
+              {% if drops.cost_mode %}
+                <td><span class="label">{{ model.blended_price }}</span></td>
+              {% else %}
+                <td class="pr--2"><span class="label">{{ model.input_price }}</span></td>
+                <td><span class="label">{{ model.output_price }}</span></td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    {% render "empty_state" with drops: drops %}
+  {% endif %}
+</div>
+
+<div class="title_bar">
+  <span class="title">OpenRouter Drops</span>
+  <span class="instance">USD / 1M tokens</span>
+</div>
