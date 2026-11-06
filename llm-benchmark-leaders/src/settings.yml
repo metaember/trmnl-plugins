@@ -52,9 +52,8 @@ custom_fields:
   name: About This Plugin
   field_type: author_bio
   category: programming,productivity
-  description: Track leading LLMs across major benchmarks.
-  learn_more_url: https://llm-stats.com/
-  email_address: trmnl@chrls.io
+  description: Compare leading LLMs on individual benchmarks, or rotate benchmarks daily. Report bugs, request features or contribute a pull request on GitHub.
+  learn_more_url: https://github.com/metaember/trmnl-plugins/issues
   github_url: https://github.com/metaember/trmnl-plugins/tree/main/llm-benchmark-leaders
 name: LLM Benchmark Leaders
 description:

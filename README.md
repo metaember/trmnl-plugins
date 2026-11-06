@@ -3,6 +3,9 @@
 Community source for TRMNL plugins maintained by Charles Bine. Bug reports,
 layout improvements, and pull requests are welcome.
 
+[Support and feature requests](https://github.com/metaember/trmnl-plugins/issues)
+· [Contribution guide](CONTRIBUTING.md)
+
 | Plugin | Recipe | Source status | License |
 | --- | --- | --- | --- |
 | [Better Battery](better-battery/) | [Install](https://trmnl.com/recipes/217763) | Maintained revision of the published plugin | CC-BY-4.0 |

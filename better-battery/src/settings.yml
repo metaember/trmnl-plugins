@@ -15,9 +15,9 @@ custom_fields:
   name: About This Plugin
   category: analytics,productivity
   field_type: author_bio
-  description: Your TRMNL's current battery status, with a fancy battery.
-  email_address: trmnl@chrls.io
+  description: Your TRMNL's battery level at a glance, with an optional percentage readout. Report bugs, request features or contribute a pull request on GitHub.
   github_url: https://github.com/metaember/trmnl-plugins/tree/main/better-battery
+  learn_more_url: https://github.com/metaember/trmnl-plugins/issues
 - keyname: include_percentage
   field_type: boolean
   name: Include Battery Percentage

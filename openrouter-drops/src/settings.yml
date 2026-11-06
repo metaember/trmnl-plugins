@@ -57,9 +57,9 @@ custom_fields:
   name: About This Plugin
   field_type: author_bio
   category: programming,news
-  description: Browse OpenRouter models by newest listing, blended token cost or context size. Filter by model type and listing age, and choose an input/output mix. No API key required. Prices are catalog rates, not a total usage quote.
+  description: Browse OpenRouter models by newest listing, blended token cost or context size. Filter by model type and listing age, and choose an input/output mix. No API key required. Prices are catalog rates, not a total usage quote. Report bugs, request features or contribute a pull request on GitHub.
   github_url: https://github.com/metaember/trmnl-plugins/tree/main/openrouter-drops
-  learn_more_url: https://openrouter.ai/models?order=newest
+  learn_more_url: https://github.com/metaember/trmnl-plugins/issues
 name: OpenRouter Drops
 description: New models, filters and token costs
 refresh_interval: 360
