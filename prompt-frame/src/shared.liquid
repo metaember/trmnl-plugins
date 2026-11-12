@@ -280,14 +280,14 @@
         <span class="description {{ answer_size }}" data-clamp="{{ answer_lines }}">{{ brief.answer | escape }}</span>
         {% render "brief_source" with source: brief.source, source_size: source_size %}
       {% else %}
-        <span class="title {{ title_size }}">Prompt Frame</span>
+        <span class="title {{ title_size }}">AI Prompt Frame</span>
         <span class="description" data-clamp="3">{{ notice | default: "Waiting for the first brief." | escape }}</span>
       {% endif %}
     </div>
   </div>
 
   <div class="title_bar">
-    <span class="title">{{ trmnl.plugin_settings.instance_name | default: "Prompt Frame" | escape }}</span>
+    <span class="title">{{ trmnl.plugin_settings.instance_name | default: "AI Prompt Frame" | escape }}</span>
     {% if brief.generated_at %}
       {% assign generated_local = brief.generated_at | plus: trmnl.user.utc_offset %}
       <span class="instance">{% if stale %}Previous · {% endif %}{{ generated_local | date: "%b %-d · %H:%M" }}</span>

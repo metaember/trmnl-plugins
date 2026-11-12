@@ -1,8 +1,9 @@
 ---
-name: Prompt Frame
-description: Turn prompts into e-paper cards
+name: AI Prompt Frame
+description: AI-generated e-paper cards
 recipe_overview: |-
-  Prompt Frame turns a recurring question into a card for your TRMNL display.
+  Write a prompt, set a refresh schedule, and turn the result into a brief,
+  chart, table, or captioned image card on your TRMNL display.
   Start with Daily Brief for a few sourced things to do in your city, or write
   a custom prompt for a topic you follow. Add dates, times, a city, or your
   own notes and data using prompt variables.
@@ -206,7 +207,7 @@ custom_fields:
   placeholder: openai/gpt-6-luna
   description: Use a model with structured output support and tool support when web search is enabled.
 - keyname: author_bio
-  name: About Prompt Frame
+  name: About AI Prompt Frame
   field_type: author_bio
   category: productivity,news
   description: Turn a recurring question into a display card. Choose from answers, lists, articles, tables, charts, quotes, and images. Bring your own OpenRouter key and use TRMNL's refresh setting to control when it runs.

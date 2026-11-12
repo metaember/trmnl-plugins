@@ -1,6 +1,6 @@
-# Prompt Frame
+# AI Prompt Frame
 
-![Prompt Frame showing a bar chart on a TRMNL OG](images/full.png)
+![AI Prompt Frame showing a bar chart on a TRMNL OG](images/full.png)
 
 A TRMNL recipe that turns a recurring prompt into a card for your display.
 OpenRouter bills generations and any search or fetch calls to your key.
@@ -62,7 +62,7 @@ the supplied image. Auto can select Image card when the URL is set. Image
 generation would require an async job and a place to serve the generated
 asset to TRMNL.
 
-![Prompt Frame showing a dithered landscape with a caption](images/image.png)
+![AI Prompt Frame showing a dithered landscape with a caption](images/image.png)
 
 For charts and tables, provide numbers or rows in `{{context}}`, or enable
 web access for sourced data. The model selects and formats the values.

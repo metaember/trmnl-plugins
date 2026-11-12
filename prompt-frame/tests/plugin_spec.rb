@@ -2,7 +2,7 @@
 
 require "json"
 
-RSpec.describe "Prompt Frame" do
+RSpec.describe "AI Prompt Frame" do
   let(:endpoint) { "POST https://openrouter.ai/api/v1/chat/completions" }
   let(:now) { Time.utc(2026, 11, 13, 1, 5) }
   let(:event_response) { fixture("events") }
