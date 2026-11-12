@@ -17,7 +17,7 @@ come from the date seed. Boarding starts 30 minutes before departure.
 | **Departure Board.** Switches among departures, arrivals, and transfers, each with its own status vocabulary. | **System Status.** Six subsystem meters, three operating states, and six temperature trends. |
 | ![Mission brief with the Nursery spacecraft, orbital transfer diagram, and vessel gauges](docs/screenshots/mission-brief.png) | ![Docking clearance with a traffic hold and a station approach diagram](docs/screenshots/docking-clearance.png) |
 | **Mission Brief.** Twelve ship silhouettes cycle through seeded missions with changing fuel, oxygen, power, and hull readings. | **Docking Clearance.** Get a berth and approach bearing for the day's ship. The station diagram highlights the assigned sector. |
-| ![Signal Intercept showing an SOS distress beacon at 121.500 MHz](docs/screenshots/signal-intercept.png) | ![Surface Survey showing two marked sites on a lunar contour map](docs/screenshots/surface-survey.png) |
+| ![Signal Intercept showing an SOS distress beacon at 121.500 MHz](docs/screenshots/signal-intercept.png) | ![Surface Survey showing two marked sites on a contour map of Titan](docs/screenshots/surface-survey.png) |
 | **Signal Intercept.** Six procedural waveforms include chirps, pulse trains, quiet scans, and an SOS distress beacon. | **Surface Survey.** Twelve landform families across Europa, Luna, Mars, and Titan. Contours show elevation, and shaded slopes and site markers help read the terrain. |
 
 ## Full screen and mashups
@@ -25,7 +25,8 @@ come from the date seed. Boarding starts 30 minutes before departure.
 The seven presets support full screen, horizontal half, vertical half, and
 quadrant. Wide slots set readouts beside diagrams. Tall slots stack them.
 The narrowest signal layouts split the waveform into two successive views, and
-tall survey layouts rotate the contour map to keep the sites in view.
+tall survey layouts rotate the contour map to keep the sites in view. The map
+fills its panel in every slot.
 
 | TRMNL X full screen, portrait | TRMNL X quadrant, landscape |
 | --- | --- |

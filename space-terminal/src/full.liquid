@@ -61,7 +61,7 @@
         <h1>SURFACE SURVEY</h1>
         <p>{{ survey.world | escape }} / SECTOR {{ survey.sector | escape }}</p>
       </header>
-      <svg class="st-survey-map" viewBox="0 0 560 350" role="img" aria-label="Topographic contours with Site A{% if survey.site_b %} and Site B{% endif %} marked">
+      <svg class="st-survey-map" viewBox="0 0 560 350" preserveAspectRatio="none" role="img" aria-label="Topographic contours with Site A{% if survey.site_b %} and Site B{% endif %} marked">
         <path class="st-relief-light" fill-rule="evenodd" d="{{ survey.shading[0] | escape }}"/>
         <path class="st-relief-deep" fill-rule="evenodd" d="{{ survey.shading[1] | escape }}"/>
         <g class="st-survey-contours">
@@ -322,5 +322,5 @@
 </div>
 {% endcase %}
 <div class="terminal-portrait">
-  {% render "terminal_compact" with screen: screen, ticket: ticket, board: board, status: status, brief: brief, dock: dock, signal: signal, survey: survey %}
+  {% render "terminal_compact" with screen: screen, ticket: ticket, board: board, status: status, brief: brief, dock: dock, signal: signal, survey: survey, survey_depth: survey_depth %}
 </div>

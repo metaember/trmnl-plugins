@@ -17,6 +17,15 @@ RSpec.describe 'Space Terminal' do
                               custom_fields: scenario.fetch('custom_fields'))
         expect(screen).to have_text(scenario.fetch('expect_text')).and(have_no_transform_error)
           .and(have_no_problems).and(have_no_overflow).and(have_no_overlapping_text)
+        if preset == 'surface_survey' && (view != 'full' || orientation == 'portrait')
+          expect(screen.evaluate(<<~JS)).to eq(true)
+            (() => {
+              const maps = [...document.querySelectorAll('.terminal-fraction-survey-map img')];
+              const visible = maps.filter(map => map.getBoundingClientRect().width > 0);
+              return visible.length === 1 && visible[0].complete && visible[0].naturalWidth > 0;
+            })()
+          JS
+        end
       end
     end
   end

@@ -4,6 +4,7 @@
 {% assign dock = IDX_0.docking_clearance | default: docking_clearance %}
 {% assign signal = IDX_0.signal_intercept | default: signal_intercept %}
 {% assign survey = IDX_0.surface_survey | default: surface_survey %}
+{% assign survey_depth = trmnl.device.bit_depth | plus: 0 %}
 {% assign board = IDX_0.departure_board | default: departure_board %}
 {% assign status = IDX_0.system_status | default: system_status %}
 {% assign brief = IDX_0.mission_brief | default: mission_brief %}
@@ -464,9 +465,8 @@
   .terminal-fraction-distress { background: #fff; color: #000; padding: 2px 5px; }
   .terminal-fraction-survey .terminal-fraction-body { padding: 0; gap: 0; grid-template-columns: minmax(0, 1fr) minmax(72px, 24%); }
   .terminal-fraction-survey-map { min-height: 0; min-width: 0; overflow: hidden; }
-  .terminal-fraction-survey-map svg { display: block; width: 100%; height: 100%; }
+  .terminal-fraction-survey-map img { display: block; width: 100%; height: 100%; }
   .terminal-fraction-survey-map .survey-tall { display: none; }
-  .terminal-fraction-survey-map .st-survey-contours { stroke-width: 2.5; }
   .terminal-fraction-survey .terminal-fraction-reading {
     display: grid; align-content: start; gap: var(--space); padding: var(--space); border-left: 1px solid;
   }
@@ -904,19 +904,24 @@
 {% endtemplate %}
 
 {% template terminal_survey_compact_map %}
+{% capture map_svg %}
 {% if tall %}
-  <svg class="survey-tall" viewBox="0 0 350 560" role="img" aria-label="Topographic contours and survey sites">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 560" preserveAspectRatio="xMidYMid slice">
   <g transform="translate(350 0) rotate(90)">
 {% else %}
-  <svg class="survey-wide" viewBox="0 0 560 350" role="img" aria-label="Topographic contours and survey sites">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 350" preserveAspectRatio="xMidYMid slice">
   <g>
 {% endif %}
-  <path class="st-relief-light" fill-rule="evenodd" d="{{ survey.shading[0] | escape }}"/>
-  <path class="st-relief-deep" fill-rule="evenodd" d="{{ survey.shading[1] | escape }}"/>
-  <g class="st-survey-contours">
+  {% if depth >= 4 %}
+    <path fill="#ddd" fill-rule="evenodd" d="{{ survey.shading[0] | escape }}"/>
+    <path fill="#bbb" fill-rule="evenodd" d="{{ survey.shading[1] | escape }}"/>
+  {% elsif depth == 2 %}
+    <path fill="#aaa" fill-rule="evenodd" d="{{ survey.shading[1] | escape }}"/>
+  {% endif %}
+  <g fill="none" stroke="black" stroke-width="1.6" stroke-linejoin="round">
     {% for contour in survey.contours %}
-      {% assign compact_contour = forloop.index | modulo: 2 %}
-      {% if compact_contour == 1 %}<path d="{{ contour | escape }}"/>{% endif %}
+      {% assign index_contour = forloop.index | modulo: 3 %}
+      <path{% if index_contour == 0 %} stroke-width="2.4"{% endif %} d="{{ contour | escape }}"/>
     {% endfor %}
   </g>
   <circle cx="{{ survey.site_x | plus: 0 }}" cy="{{ survey.site_y | plus: 0 }}" r="10" fill="black" stroke="white" stroke-width="4"/>
@@ -925,6 +930,8 @@
   {% endif %}
   </g>
   </svg>
+{% endcapture %}
+<img class="{% if tall %}survey-tall{% else %}survey-wide{% endif %}" src="data:image/svg+xml;base64,{{ map_svg | base64_encode }}" alt="Topographic contours and survey sites">
 {% endtemplate %}
 
 {% template terminal_signal_scope %}
@@ -1076,8 +1083,8 @@
   <header class="terminal-fraction-header"><h1>SURFACE SURVEY</h1><span>{{ survey.world | escape }} / {{ survey.sector | escape }}</span></header>
   <div class="terminal-fraction-body">
     <div class="terminal-fraction-survey-map">
-      {% render "terminal_survey_compact_map" with survey: survey, tall: false %}
-      {% render "terminal_survey_compact_map" with survey: survey, tall: true %}
+      {% render "terminal_survey_compact_map" with survey: survey, tall: false, depth: survey_depth %}
+      {% render "terminal_survey_compact_map" with survey: survey, tall: true, depth: survey_depth %}
     </div>
     <div class="terminal-fraction-reading">
       <p>{{ survey.feature | escape }}</p>
