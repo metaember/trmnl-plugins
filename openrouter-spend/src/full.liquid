@@ -1,0 +1,65 @@
+{% if history %}
+  <div class="layout layout--col layout--top layout--stretch-x gap--small">
+    <div class="no-shrink">
+      {% if history.kpis.size == 4 %}
+        {% render "history_kpis" with history: history, columns: 4, size: "base lg:landscape:value--large" %}
+      {% else %}
+        {% render "history_kpis" with history: history, columns: 3, size: "large lg:landscape:value--xlarge" %}
+      {% endif %}
+    </div>
+    <div class="divider"></div>
+    {% if history.has_activity %}
+      {% render "history_heading" with history: history %}
+      {% render "history_chart" with history: history %}
+      {% if history.breakdown.size > 0 %}
+        <div class="divider"></div>
+        <div class="no-shrink">
+          {% render "spend_rows" with rows: history.breakdown, limit: 4, columns: history.breakdown.size %}
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="flex flex--col flex--center-y grow">
+        <span class="label">No activity in this window · {{ history.caption }}</span>
+      </div>
+    {% endif %}
+  </div>
+{% elsif key_count > 1 %}
+  <div class="layout layout--col layout--top layout--stretch-x gap">
+    <div class="grid grid--cols-4 no-shrink">
+      {% render "spend_metric" with caption: "This month", amount: month, size: "base lg:landscape:value--large" %}
+      {% render "spend_metric" with caption: "Today", amount: today, size: "base lg:landscape:value--large" %}
+      {% render "spend_metric" with caption: "This week", amount: week, size: "base lg:landscape:value--large" %}
+      {% render "spend_metric" with caption: "Lifetime", amount: lifetime, size: "base lg:landscape:value--large" %}
+    </div>
+    <div class="divider"></div>
+    {% if key_count == 2 %}
+      <div class="grid grid--cols-2 grow gap">
+        {% for key in key_rows %}
+          {% render "key_card" with key: key %}
+        {% endfor %}
+      </div>
+    {% else %}
+      {% render "key_table" with rows: key_rows, detailed: true %}
+    {% endif %}
+  </div>
+{% elsif spend_available %}
+  <div class="layout layout--col layout--stretch-x gap">
+    <div class="grid grid--cols-3 grow flex--center-y">
+      <div class="col--span-2 flex flex--col flex--center-y">
+        {% render "spend_metric" with caption: "This month", amount: month, size: "xxlarge lg:landscape:value--xxxlarge" %}
+      </div>
+      <div class="flex flex--col flex--center-y">
+        {% render "spend_budget" with budget: budget, size: "large" %}
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="grid grid--cols-3 grow flex--center-y">
+      {% render "spend_metric" with caption: "Today", amount: today, size: "large" %}
+      {% render "spend_metric" with caption: "This week", amount: week, size: "large" %}
+      {% render "spend_metric" with caption: "Lifetime", amount: lifetime, size: "large" %}
+    </div>
+  </div>
+{% else %}
+  {% render "spend_unavailable" with notice: notice %}
+{% endif %}
+{% render "spend_title" with history: history, key_count: key_count, notice: notice %}

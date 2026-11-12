@@ -1,0 +1,4 @@
+custom_fields:
+  openrouter_api_key: "{{ env.OPENROUTER_API_KEY }}"
+  openrouter_extra_keys: "{{ env.OPENROUTER_EXTRA_KEYS }}"
+  openrouter_management_key: "{{ env.OPENROUTER_MANAGEMENT_KEY }}"

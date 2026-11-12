@@ -11,6 +11,7 @@ layout improvements, and pull requests are welcome.
 | [Better Battery](better-battery/) | [Install](https://trmnl.com/recipes/217763) | Maintained revision of the published plugin | CC-BY-4.0 |
 | [LLM Benchmark Leaders](llm-benchmark-leaders/) | [Install](https://trmnl.com/recipes/101445) | Published leaderboard with portability fixes | CC-BY-4.0 |
 | [OpenRouter Drops](openrouter-drops/) | Not yet published as a recipe | New model listings, filtering and cost comparisons | MIT |
+| [OpenRouter Spend](openrouter-spend/) | Not yet published as a recipe | API key budgets and optional model, key, and token history | MIT |
 | [AI Prompt Frame](prompt-frame/) | Not yet published as a recipe | Scheduled prompts rendered as briefs, charts, tables, and image cards | MIT |
 
 Each folder is a normal `trmnlp` project with `src/`, `.trmnlp.yml`, tests,
@@ -35,6 +36,10 @@ Each module README also shows an alternate theme or setting.
 ### OpenRouter Drops
 
 ![OpenRouter Drops — X full screen](openrouter-drops/images/full.png)
+
+### OpenRouter Spend
+
+![OpenRouter Spend — Models preset on X with demo data](openrouter-spend/images/full.png)
 
 ### AI Prompt Frame
 
@@ -84,7 +89,8 @@ or authenticate with `trmnlp` and push your own copy. See TRMNL's
 
 ## Licenses and data
 
-Repository tooling and OpenRouter Drops use the [MIT license](LICENSE).
+Repository tooling, OpenRouter Drops, OpenRouter Spend, and AI Prompt Frame use
+the [MIT license](LICENSE).
 Better Battery and LLM Benchmark Leaders retain their published CC-BY-4.0
 license, provided in each module folder. Preserve author and license notices
 when contributing or redistributing those modules.
