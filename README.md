@@ -13,6 +13,7 @@ layout improvements, and pull requests are welcome.
 | [OpenRouter Drops](openrouter-drops/) | Not yet published as a recipe | New model listings, filtering and cost comparisons | MIT |
 | [OpenRouter Spend](openrouter-spend/) | Not yet published as a recipe | API key budgets and optional model, key, and token history | MIT |
 | [AI Prompt Frame](prompt-frame/) | Not yet published as a recipe | Scheduled prompts rendered as briefs, charts, tables, and image cards | MIT |
+| [Space Terminal](space-terminal/) | Not yet published as a recipe | Seven procedurally generated screens from a fictional spaceport | MIT |
 
 Each folder is a normal `trmnlp` project with `src/`, `.trmnlp.yml`, tests,
 and its own README. Account-specific plugin IDs and credentials are omitted.

@@ -1,0 +1,326 @@
+{% case screen %}
+{% when 'docking_clearance' %}
+<main class="terminal-screen st-dock">
+  <div class="st-dock-frame">
+    <header class="st-dock-header">
+      <h1>DOCKING CLEARANCE</h1>
+    </header>
+
+    <div class="st-dock-body">
+      <section class="st-dock-assignment" aria-label="Docking assignment">
+        <p class="st-dock-berth">{{ dock.berth | escape }}</p>
+        {% assign dock_destination_length = dock.destination | size %}
+        <p class="st-dock-destination{% if dock_destination_length > 16 %} st-dock-destination-long{% endif %}">{{ dock.destination | escape }}</p>
+        <p class="st-dock-clearance">{{ dock.clearance | escape }}</p>
+      </section>
+
+      {% render "terminal_station_map" with dock: dock %}
+    </div>
+
+    <footer class="st-dock-footer">
+      <p><span>VESSEL</span> <strong>{{ dock.vessel | escape }}</strong></p>
+      <p><strong>{{ dock.side | escape }}</strong></p>
+      <p><span>APPROACH</span> <strong>{{ dock.bearing | escape }}</strong></p>
+    </footer>
+  </div>
+</main>
+{% when 'signal_intercept' %}
+{% assign signal_marker = signal.marker | plus: 0 | at_least: 8 | at_most: 492 %}
+<main class="terminal-screen st-signal">
+  <header class="st-signal-header"><h1>SIGNAL INTERCEPT</h1><span{% if signal.distress %} class="terminal-fraction-distress"{% endif %}>{{ signal.kind | default: 'ACQUIRED' | escape }}</span></header>
+  <div class="st-signal-body">
+    <svg class="st-signal-plot" viewBox="0 0 500 240" preserveAspectRatio="none" role="img" aria-label="Signal waveform with acquisition marker">
+      <g class="st-signal-grid">
+        <path d="M83 4V236 M167 4V236 M250 4V236 M333 4V236 M417 4V236"/>
+        <path d="M4 48H496 M4 96H496 M4 144H496 M4 192H496"/>
+      </g>
+      {% unless signal.distress or signal.kind == 'QUIET SCAN' %}<g class="st-signal-marker" transform="translate({{ signal_marker }},0)">
+        <path d="M0 15V225"/>
+        <path d="M-7 4H7L0 14Z M-7 236H7L0 226Z"/>
+      </g>{% endunless %}
+      <polyline class="st-signal-trace" points="{{ signal.trace | escape }}"/>
+    </svg>
+    <div class="st-signal-readouts">
+      <div class="st-signal-frequency">
+        <strong>{{ signal.frequency | escape }}</strong>
+        <span>MHz</span>
+      </div>
+      <div class="st-signal-source">
+        <span>SOURCE</span>
+        <strong>{{ signal.source | escape }}</strong>
+      </div>
+    </div>
+  </div>
+  <footer class="st-signal-footer">{% if signal.distress %}SOS / ... --- ... · {% endif %}REPEAT INTERVAL <strong>{{ signal.repeat_interval | escape }}</strong></footer>
+</main>
+{% when 'surface_survey' %}
+<main class="terminal-screen st-survey" aria-label="Surface Survey">
+  <div class="st-survey-plate">
+    <div class="st-survey-chart">
+      <header class="st-survey-head">
+        <h1>SURFACE SURVEY</h1>
+        <p>{{ survey.world | escape }} / SECTOR {{ survey.sector | escape }}</p>
+      </header>
+      <svg class="st-survey-map" viewBox="0 0 560 350" role="img" aria-label="Topographic contours with Site A{% if survey.site_b %} and Site B{% endif %} marked">
+        <path class="st-relief-light" fill-rule="evenodd" d="{{ survey.shading[0] | escape }}"/>
+        <path class="st-relief-deep" fill-rule="evenodd" d="{{ survey.shading[1] | escape }}"/>
+        <g class="st-survey-contours">
+          {% for contour in survey.contours %}
+            {% assign contour_index = forloop.index | modulo: 3 %}
+            <path{% if contour_index == 0 %} class="st-survey-index"{% endif %} d="{{ contour | escape }}"/>
+          {% endfor %}
+        </g>
+        <path class="st-survey-map-ticks" d="M70 0v5m70-5v5m70-5v5m70-5v9m70-9v5m70-5v5m70-5v5 M70 350v-5m70 5v-5m70 5v-5m70 5v-9m70 9v-5m70 5v-5m70 5v-5 M0 70h5m-5 70h5m-5 70h5m-5 70h5 M560 70h-5m5 70h-5m5 70h-5m5 70h-5"/>
+        <g transform="translate({{ survey.site_x | plus: 0 }},{{ survey.site_y | plus: 0 }})">
+          <path d="M0 0l-49-44h-19" stroke="white" stroke-width="7" fill="none"/>
+          <path d="M0 0l-49-44h-19" stroke="black" stroke-width="2" fill="none"/>
+          <rect x="-4" y="-4" width="8" height="8" fill="black" stroke="white" stroke-width="1"/>
+          <rect x="-124" y="-57" width="60" height="25" fill="white" stroke="black" stroke-width="2"/>
+          <text x="-94" y="-39" text-anchor="middle">SITE A</text>
+        </g>
+        {% if survey.site_b %}
+          <g transform="translate({{ survey.site_b.x | plus: 0 }},{{ survey.site_b.y | plus: 0 }})">
+            <path d="M0 0l28-26h14" stroke="white" stroke-width="7" fill="none"/>
+            <path d="M0 0l28-26h14" stroke="black" stroke-width="2" fill="none"/>
+            <path d="M0-6l6 6-6 6-6-6Z" fill="white" stroke="black" stroke-width="2"/>
+            <rect x="40" y="-39" width="64" height="25" fill="white" stroke="black" stroke-width="2"/>
+            <text x="72" y="-21" text-anchor="middle">SITE B</text>
+          </g>
+        {% endif %}
+        <g transform="translate(516 302)">
+          <rect x="-16" y="-34" width="32" height="58" fill="white"/>
+          <text x="0" y="-16" text-anchor="middle">N</text>
+          <path d="M0-8l8 18-8-4-8 4Z" fill="black"/>
+          <path d="M0 6v13" stroke="black" stroke-width="2"/>
+        </g>
+        <g transform="translate(28 317)">
+          <rect x="-9" y="-23" width="192" height="43" fill="white"/>
+          <text x="84" y="-3" text-anchor="middle">5 KM</text>
+          <path d="M0 4v11m0-5h168m0-6v11" stroke="black" stroke-width="2" fill="none"/>
+        </g>
+      </svg>
+    </div>
+    <aside class="st-survey-notes" aria-label="Survey readings">
+      <div class="st-survey-feature">{{ survey.feature | escape }}</div>
+      <div class="st-survey-reading">
+        <span>RELIEF</span>
+        <strong>{{ survey.relief | plus: 0 }} M</strong>
+      </div>
+      <div class="st-survey-state">{{ survey.status | escape }}{% if survey.interval %}<p>CONTOURS {{ survey.interval }} M</p>{% endif %}</div>
+      {% if survey.elevations %}
+        <div class="st-survey-datum">
+          <span>ABOVE DATUM</span>
+          <div><b>A</b> +{{ survey.elevations[0] }} M</div>
+          {% if survey.site_b %}<div><b>B</b> +{{ survey.elevations[1] }} M</div>{% endif %}
+        </div>
+      {% endif %}
+    </aside>
+  </div>
+</main>
+{% when 'departure_board' %}
+<main class="terminal-screen">
+  <div class="terminal-board-frame">
+    <header class="terminal-board-header">
+      <div><h1>{{ board.title }}</h1><p>{{ board.subtitle }}</p></div>
+      <div class="terminal-clock">{{ board.telemetry.clock }} <small>:{{ board.telemetry.millis }}</small></div>
+    </header>
+    <div class="terminal-board-row terminal-board-columns">
+      <span>Flight</span><span>Code</span><span>{{ board.place_heading | default: 'Destination' }}</span><span>{{ board.time_heading | default: 'Departing' }}</span><span>Gate</span><span>Status</span>
+    </div>
+    {% for row in board.destinations limit: 5 %}
+      {% assign flight_number = forloop.index0 | times: 111 | plus: 1000 %}
+      <div class="terminal-board-row">
+        <span>{{ row.flight | default: flight_number }}</span><strong class="terminal-board-code">{{ row.code }}</strong>
+        <span>{{ row.name }}</span><span class="terminal-board-time">{{ row.time }}</span>
+        <span>{{ row.gate }}</span><span>{{ row.status }}</span>
+      </div>
+    {% endfor %}
+    <footer class="terminal-board-footer">
+      <span>EXT_TEMP:{{ board.telemetry.temp }}　　POS: {{ board.telemetry.coordinates }}</span>
+      <span class="terminal-board-indicators">
+        {% assign indicators = 'PWR,COM,NAV,SYS' | split: ',' %}
+        {% for indicator in indicators %}<span>{{ indicator }} <i></i></span>{% endfor %}
+      </span>
+    </footer>
+    <div class="terminal-board-stamp"><span>TRMNL.SYS.v1.500</span><time>{{ board.telemetry.stamp }}</time></div>
+  </div>
+</main>
+{% when 'system_status' %}
+<main class="terminal-screen terminal-status">
+  <div class="terminal-status-id"><span>SYS.STATUS.v2.3</span><span>RES:800x480</span></div>
+  <header class="terminal-status-header">
+    <h1><strong>SYSTEM</strong> STATUS</h1>
+    <div class="terminal-status-state{% if status.systemStatus != 'NOMINAL' %} terminal-status-state--alert{% endif %}">[{{ status.systemStatus }}]</div>
+  </header>
+  <div class="terminal-status-grid">
+    {% for system in status.systems %}
+      <div class="terminal-module">
+        <div class="terminal-module-name">{{ system.name }}</div>
+        <div class="terminal-module-data">
+          <p>{{ system.status }}</p>
+          <div class="terminal-meter-row">
+            {% render "terminal_system_meter" with system: system %}
+            <span>{{ system.value }}%</span>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="terminal-graphs">
+    <div><div class="terminal-graph-heading"><span>CORE TEMP{% if status.temperature_profile %} / {{ status.temperature_profile }}{% endif %}</span><span>{{ status.temperature }} K</span></div>
+      <div class="terminal-graph">
+        <svg viewBox="0 0 370 60" preserveAspectRatio="none" aria-hidden="true">
+          <polyline points="{{ status.temperature_trace }}" fill="none" stroke="black" stroke-width="2"/>
+        </svg>
+      </div>
+    </div>
+    <div><div class="terminal-graph-heading"><span>RADIATION</span><span>{{ status.dose | default: '0.42' }} mSv</span></div>
+      <div class="terminal-graph">
+        <svg viewBox="0 0 372 60" preserveAspectRatio="none" aria-hidden="true">
+          {% for height in status.radiation %}
+            <rect x="{{ forloop.index0 | times: 31 }}" y="{{ 60 | minus: height }}" width="28" height="{{ height }}"/>
+          {% endfor %}
+        </svg>
+      </div>
+    </div>
+  </div>
+  <div class="terminal-alert-title"><span>SYSTEM ALERTS</span></div>
+  {% for alert in status.alerts %}
+    <div class="terminal-alert"><span>▪ {{ alert }}</span><time>{{ status.clock }}</time></div>
+  {% endfor %}
+</main>
+{% when 'mission_brief' %}
+<main class="terminal-screen terminal-brief">
+  <header class="terminal-brief-header">
+    <p>&gt; MISSION BRIEFING</p><p>&gt; {{ brief.missionCode }}</p>
+    <p>&gt; CLASSIFIED: LEVEL 3 <span class="terminal-brief-cursor"></span></p>
+  </header>
+  <div class="terminal-brief-main">
+    <div class="terminal-brief-details">
+      <p><span>OBJECTIVE</span>{{ brief.details.objective }}</p>
+      <p><span>DURATION</span>{{ brief.details.duration }}</p>
+      <p><span>CREW</span>{{ brief.details.crew }}</p>
+      <p><span>CARGO</span>{{ brief.details.cargo }}</p>
+      <p><span>FUEL</span>{{ brief.details.fuel }}</p>
+      <p><span>RISK</span>{{ brief.details.risk }}</p>
+    </div>
+    {% if brief.ship.model %}
+      <figure class="terminal-ship">
+        <svg viewBox="0 0 200 100" role="img" aria-label="{{ brief.ship.name | escape }} spacecraft, plan view">
+          <g class="terminal-ship-guides">
+            <path d="M3 9V3H9 M191 3H197V9 M197 91V97H191 M9 97H3V91"/>
+            <path d="M3 50H197 M100 3V97" stroke-dasharray="2 4"/>
+          </g>
+          <path fill="white" d="{{ brief.ship.hull | escape }}"/>
+          <path fill="none" stroke="black" stroke-width="2" stroke-linejoin="round" d="{{ brief.ship.etch | escape }}"/>
+        </svg>
+        <figcaption>
+          <div><strong>{{ brief.ship.name }}</strong> <span>{{ brief.ship.model }}</span></div>
+          <div>{{ brief.ship.role }}</div>
+        </figcaption>
+      </figure>
+    {% endif %}
+  </div>
+  <div class="terminal-brief-panels">
+    <section class="terminal-brief-panel">
+      <h2>ORBITAL TRANSFER</h2>
+      <div class="terminal-transfer">
+        <div class="terminal-transfer-data">
+          <p>HOHMANN PROFILE</p>
+          <p>ΔV 4.2 KM/S</p>
+          <p>BURN 03:45</p>
+          <p><b>1</b> DEPART</p>
+          <p><b>2</b> INSERT</p>
+        </div>
+        <svg class="terminal-orbit" viewBox="0 0 174 128" role="img" aria-label="Hohmann transfer arc from the inner orbit to the outer orbit">
+          <g fill="none" stroke="white">
+            <path d="M22 64H160 M89 0V128" stroke-dasharray="1 5"/>
+            <circle cx="89" cy="64" r="61" stroke-dasharray="3 4"/>
+            <circle cx="89" cy="64" r="28" stroke-dasharray="3 4"/>
+            <path d="M61 64A44.5 41.33 0 0 1 150 64" stroke-width="2"/>
+            <path d="M109 18 117 24 108 28" stroke-width="2"/>
+          </g>
+          <g fill="white"><circle cx="89" cy="64" r="4"/><rect x="58" y="61" width="6" height="6"/><rect x="147" y="61" width="6" height="6"/></g>
+          <g fill="white" font-size="11"><text x="49" y="77">1</text><text x="156" y="77">2</text></g>
+        </svg>
+      </div>
+    </section>
+    <section class="terminal-brief-panel">
+      <h2>VESSEL STATUS</h2>
+      {% render "terminal_vessel_gauges" with brief: brief %}
+      <p class="terminal-launch">LAUNCH WINDOW:　T-04:32:15</p>
+    </section>
+  </div>
+</main>
+{% else %}
+<div class="layout departure-pass">
+  <div class="departure-ticket">
+    <section class="departure-main">
+      <header class="departure-header">
+        <div>
+          <div class="departure-brand"><span class="departure-brand-heavy">KÁRMÁN</span><span class="departure-brand-light">SPACELINES</span></div>
+          <div class="departure-micro">{{ document_type }}</div>
+        </div>
+        <div class="departure-header-meta">CLASS: {{ cabin_class }}</div>
+      </header>
+
+      <div class="departure-main-body">
+        <div class="departure-content">
+          <div class="departure-label">PASSENGER NAME</div>
+          <div class="departure-passenger">{{ passenger }}</div>
+
+          <div class="departure-route">
+            <div>
+              <div class="departure-label">FROM</div>
+              <div class="departure-place">{{ origin }}</div>
+            </div>
+            <div class="departure-route-mark">
+              <span class="departure-route-line"></span>
+              <span class="departure-route-arrow">&gt;</span>
+            </div>
+            <div>
+              <div class="departure-label">TO</div>
+              <div class="departure-place">{{ destination }}</div>
+            </div>
+          </div>
+
+          <div class="departure-fields">
+            <div><div class="departure-label">FLIGHT</div><div class="departure-value">{{ flight }}</div></div>
+            <div><div class="departure-label">GATE</div><div class="departure-value">{{ gate }}</div></div>
+            <div><div class="departure-label">SEAT</div><div class="departure-value">{{ seat }}</div></div>
+          </div>
+
+          <div class="departure-times">
+            <div><div class="departure-label">DEPARTURE</div><div class="departure-value">{{ departure }}</div></div>
+            <div><div class="departure-label">BOARDING</div><div class="departure-value">{{ boarding }}</div></div>
+          </div>
+        </div>
+
+        <div class="departure-barcode-block">
+          <svg class="departure-barcode-svg" viewBox="0 0 560 40" aria-hidden="true">
+            {% for bar in ticket.barcode_bars %}
+              <rect x="{{ bar.x }}" y="0" width="{{ bar.width }}" height="40"/>
+            {% endfor %}
+          </svg>
+          <div class="departure-barcode-text">{{ barcode }}</div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="departure-stub">
+      <div class="departure-stub-body">
+        <span class="departure-stub-column departure-stub-column--label">BOARDING STUB</span>
+        <span class="departure-stub-column departure-stub-column--flight">{{ flight }}</span>
+        <span class="departure-stub-column departure-stub-column--gate">{{ gate }}</span>
+        <span class="departure-stub-column departure-stub-column--seat">{{ seat }}</span>
+      </div>
+      <div class="departure-stub-code">
+        <svg class="departure-barcode-svg" viewBox="0 0 90 25" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="0" width="3" height="25"/><rect x="4" y="0" width="1" height="25"/><rect x="8" y="0" width="4" height="25"/><rect x="15" y="0" width="5" height="25"/><rect x="21" y="0" width="4" height="25"/><rect x="26" y="0" width="3" height="25"/><rect x="30" y="0" width="1" height="25"/><rect x="32" y="0" width="3" height="25"/><rect x="38" y="0" width="4" height="25"/><rect x="43" y="0" width="5" height="25"/><rect x="51" y="0" width="5" height="25"/><rect x="59" y="0" width="5" height="25"/><rect x="65" y="0" width="1" height="25"/><rect x="67" y="0" width="3" height="25"/><rect x="71" y="0" width="1" height="25"/><rect x="75" y="0" width="3" height="25"/><rect x="82" y="0" width="4" height="25"/><rect x="87" y="0" width="1" height="25"/><rect x="89" y="0" width="3" height="25"/></svg>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endcase %}
+<div class="terminal-portrait">
+  {% render "terminal_compact" with screen: screen, ticket: ticket, board: board, status: status, brief: brief, dock: dock, signal: signal, survey: survey %}
+</div>
