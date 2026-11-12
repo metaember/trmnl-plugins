@@ -1,0 +1,30 @@
+{% if history %}
+  <div class="layout layout--col layout--stretch-x gap--small">
+    <div class="grid grid--cols-2 gap--small">
+      {% for kpi in history.kpis %}
+        {% render "spend_metric" with caption: kpi.label, amount: kpi.value, size: "base lg:landscape:value--large", narrow: true %}
+      {% endfor %}
+    </div>
+    {% if history.has_activity %}
+      <span class="label label--small">{{ history.caption }}</span>
+    {% else %}
+      <span class="label label--small">No activity in this window</span>
+    {% endif %}
+  </div>
+{% elsif spend_available %}
+  <div class="layout layout--stretch-x">
+    <div class="grid grid--cols-2 gap--small">
+      {% render "spend_metric" with caption: "This month", amount: month, size: "base lg:landscape:value--large", narrow: true %}
+      {% render "spend_metric" with caption: "Today", amount: today, size: "base lg:landscape:value--large", narrow: true %}
+      {% render "spend_metric" with caption: "This week", amount: week, size: "small lg:landscape:value--base", narrow: true %}
+      {% if budget %}
+        {% render "spend_metric" with caption: "Key budget left", amount: budget.remaining, size: "small lg:landscape:value--base", narrow: true %}
+      {% else %}
+        {% render "spend_metric" with caption: "Lifetime", amount: lifetime, size: "small lg:landscape:value--base", narrow: true %}
+      {% endif %}
+    </div>
+  </div>
+{% else %}
+  {% render "spend_unavailable" with notice: notice %}
+{% endif %}
+{% render "spend_title" with history: history, key_count: key_count, notice: notice %}

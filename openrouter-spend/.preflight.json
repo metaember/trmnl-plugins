@@ -1,0 +1,26 @@
+{
+  "scenarios": {
+    "demo-models": {
+      "custom_fields": {"openrouter_api_key": "demo", "dashboard_preset": "models"},
+      "now": "2026-11-12T12:00:00Z",
+      "mocks": {
+        "https://openrouter.ai/api/v1/models/count": {"json": {"data": {"count": 473}}}
+      },
+      "expect_text": "Demo data"
+    },
+    "regular-keys": {
+      "custom_fields": {"openrouter_api_key": "Production=fixture-one", "openrouter_extra_keys": "Research=fixture-two"},
+      "mocks": {
+        "https://openrouter.ai/api/v1/models/count": {"json": {"data": {"count": 473}}},
+        "https://openrouter.ai/api/v1/key": {"json_file": "tests/fixtures/key.json"}
+      },
+      "expect_text": "$51.00"
+    },
+    "missing-key": {
+      "mocks": {
+        "https://openrouter.ai/api/v1/models/count": {"json": {"data": {"count": 473}}}
+      },
+      "expect_text": "Spend unavailable"
+    }
+  }
+}

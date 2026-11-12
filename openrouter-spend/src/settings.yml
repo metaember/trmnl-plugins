@@ -1,0 +1,87 @@
+name: OpenRouter Spend
+description: Spend, tokens, models and API keys
+strategy: polling
+refresh_interval: 60
+polling_url: https://openrouter.ai/api/v1/models/count
+polling_verb: get
+serverless_language: node
+custom_fields:
+  - keyname: dashboard_preset
+    field_type: select
+    name: Dashboard preset
+    default: overview
+    options:
+      - 'Overview': 'overview'
+      - 'Models': 'models'
+      - 'Keys': 'keys'
+      - 'Tokens': 'tokens'
+  - keyname: openrouter_api_key
+    field_type: password
+    name: OpenRouter API Key
+    optional: true
+    description: A regular OpenRouter key for current spend and budget. Enter demo to preview with sample data.
+  - keyname: openrouter_extra_keys
+    field_type: password
+    name: Additional API keys
+    optional: true
+    description: Up to six regular keys total, comma-separated. Use Label=key to name a key.
+  - keyname: openrouter_management_key
+    field_type: password
+    name: OpenRouter Management Key
+    optional: true
+    description: Optional. Available on OpenRouter Standard Pay-as-you-go and higher plans. Enables account activity charts and takes precedence over regular keys.
+  - keyname: managed_key_filter
+    field_type: string
+    name: Track specific managed keys
+    optional: true
+    description: Up to six exact names or hashes in the default workspace, comma-separated. Leave blank for account activity or the top six keys in the Keys preset.
+  - keyname: history_days
+    field_type: select
+    name: History window
+    default: '14'
+    options:
+      - '7 completed days': '7'
+      - '14 completed days': '14'
+      - '30 completed days': '30'
+  - keyname: time_grouping
+    field_type: select
+    name: Time grouping
+    description: Weekly charts group days by Monday-start UTC weeks.
+    default: daily
+    options:
+      - 'Daily': 'daily'
+      - 'Weekly': 'weekly'
+  - keyname: chart_metric
+    field_type: select
+    name: Chart metric
+    default: auto
+    options:
+      - 'Preset default': 'auto'
+      - 'Spend': 'spend'
+      - 'Tokens': 'tokens'
+      - 'Requests': 'requests'
+  - keyname: chart_style
+    field_type: select
+    name: Chart style
+    default: auto
+    options:
+      - 'Preset default': 'auto'
+      - 'Stacked columns': 'stacked'
+      - 'Trend lines': 'line'
+  - keyname: author_bio
+    field_type: author_bio
+    name: About This Plugin
+    category: programming
+    description: >-
+      Track OpenRouter spend and key budgets on your TRMNL. Use a regular API key
+      to see spending today, this week, this month, and across the lifetime of
+      the key. Add up to six regular keys to compare projects and see how much
+      budget each has left. An optional OpenRouter Management key enables
+      historical charts for spending, token counts, and requests. Choose an
+      overview or break down activity by model, key, or token type. Charts
+      support daily and weekly grouping for 7, 14, or 30 completed UTC days.
+      Enter demo in the regular key field to explore the views with sample
+      data. TRMNL polls OpenRouter directly on refresh. Source and support are
+      available on GitHub.
+    github_url: https://github.com/metaember/trmnl-plugins/tree/main/openrouter-spend
+    learn_more_url: https://github.com/metaember/trmnl-plugins/issues

@@ -1,0 +1,258 @@
+{% template spend_metric %}
+  <div class="flex flex--col flex--left stretch-x">
+    <span class="label portrait:label--small">{{ caption }}</span>
+    {% if dense and amount.size > 7 %}
+      {% assign size = "xxsmall" %}
+    {% elsif amount.size > 10 %}
+      {% assign size = "xsmall" %}
+    {% elsif amount.size > 7 %}
+      {% assign size = "small" %}
+    {% endif %}
+    <span class="value value--{{ size }} value--tnums {% if dense or amount.size > 10 %}portrait:value--xxsmall{% elsif narrow or amount.size > 7 %}portrait:value--xsmall{% else %}portrait:value--small{% endif %}">{{ amount | escape }}</span>
+  </div>
+{% endtemplate %}
+
+{% template spend_budget %}
+  <div class="flex flex--col flex--left stretch-x">
+    {% if budget %}
+      {% render "spend_metric" with caption: "Remaining", amount: budget.remaining, size: size %}
+      <span class="label">{{ budget.label }} · {{ budget.limit | escape }}</span>
+    {% else %}
+      <span class="label label--outline">No key cap</span>
+    {% endif %}
+  </div>
+{% endtemplate %}
+
+{% template spend_unavailable %}
+  <div class="layout layout--col gap--small">
+    <span class="title title--small">Spend unavailable</span>
+    <span class="label">{{ notice | default: "Check the API key in plugin settings." | escape }}</span>
+  </div>
+{% endtemplate %}
+
+{% template spend_title %}
+  <div class="title_bar">
+    <span class="title">{% if history.scope == "Demo data" %}OpenRouter<span class="portrait:hidden"> Spend</span>{% else %}OpenRouter Spend{% endif %}</span>
+    {% if history %}
+      <span class="instance" data-clamp="1">{{ history.scope | escape }}</span>
+    {% elsif notice != blank %}
+      <span class="instance" data-clamp="1">{{ notice | escape }}</span>
+    {% elsif key_count > 1 %}
+      <span class="instance">{{ key_count }} keys</span>
+    {% endif %}
+  </div>
+{% endtemplate %}
+
+{% template spend_rows %}
+  <div class="grid grid--cols-{{ columns }} gap--small">
+    {% for row in rows limit: limit %}
+      <div class="item">
+        <div class="content">
+          <span class="title title--small lg:title--base" data-clamp="1">{{ row.name | escape }}</span>
+          <span class="value value--tnums {% if row.amount.size > 10 %}value--xsmall{% else %}value--small lg:landscape:value--base{% endif %}">{{ row.amount | escape }}</span>
+          <span class="label label--small label--gray 1bit:text--black">{{ row.detail | escape }}</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endtemplate %}
+
+{% template history_kpis %}
+  <div class="grid grid--cols-{{ columns }}">
+    {% for kpi in history.kpis limit: columns %}
+      {% render "spend_metric" with caption: kpi.label, amount: kpi.value, size: size, narrow: narrow %}
+    {% endfor %}
+  </div>
+{% endtemplate %}
+
+{% template history_heading %}
+  <div class="flex flex--row flex--between flex--center-y gap--small portrait:flex--col portrait:flex--left portrait:gap--none">
+    <span class="title title--small">{{ history.chart_label }}</span>
+    <span class="label label--small">{{ history.caption }}</span>
+  </div>
+{% endtemplate %}
+
+{% template history_chart %}
+  {% assign chart_id = "openrouter-spend-chart" | append_random %}
+  <div id="{{ chart_id }}" class="w--full grow h--[0px]" data-spend-chart="{{ history.chart | json | escape }}"></div>
+  <script src="https://trmnl.com/js/highcharts/12.3.0/highcharts.js"></script>
+  <script src="https://trmnl.com/js/highcharts/12.3.0/pattern-fill.js"></script>
+  <script>
+    (() => {
+      const node = document.getElementById('{{ chart_id }}');
+      if (!window.Highcharts) {
+        node.textContent = "Chart unavailable";
+        return;
+      }
+
+      const { dates, series, currency, type } = JSON.parse(node.dataset.spendChart);
+      const slotHeight = () => Math.floor(parseFloat(getComputedStyle(node).height)) - 2;
+      const height = Math.max(40, slotHeight());
+      const narrowChart = node.clientWidth < 320;
+      const compactChart = height < 155 || node.clientWidth < 400;
+      const axisLabelStyle = { color: "#000", fontSize: compactChart ? "12px" : "13px", fontWeight: "600" };
+      const tickCount = Math.min(dates.length, narrowChart ? 3 : compactChart ? 4 : 6);
+      const ticks = Array.from({ length: tickCount }, (_, index) =>
+        Math.round(index * (dates.length - 1) / Math.max(1, tickCount - 1))
+      );
+      const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 2 });
+      const dark = ["#171717", "#4a4a4a", "#6c6c6c", "#848484"];
+      const dash = ["Solid", "ShortDash", "Dot", "DashDot"];
+      const fills = [null, "M 0 0 L 5 5 M 5 0 L 0 5", "M 0 5 L 5 0", "M 2 2 L 3 2"];
+
+      let columnCaps;
+      function drawColumnCaps() {
+        const tops = new Map();
+        for (const series of this.series) {
+          if (!series.visible) continue;
+          for (const point of series.points) {
+            if (!(point.y > 0) || !point.shapeArgs) continue;
+            const shape = point.shapeArgs;
+            if (!tops.has(point.x) || shape.y < tops.get(point.x).y) {
+              tops.set(point.x, shape);
+            }
+          }
+        }
+
+        const segments = [...tops.values()].flatMap(({ x, y, width }) => {
+          const top = Math.floor(this.plotTop + y) + 0.5;
+          return [["M", this.plotLeft + x, top], ["L", this.plotLeft + x + width, top]];
+        });
+        columnCaps ??= this.renderer.path().addClass("spend-column-caps")
+          .attr({ stroke: "#3a3a3a", "stroke-width": 1, zIndex: 4, "aria-hidden": "true" }).add();
+        columnCaps.attr({ d: segments });
+      }
+
+      const chart = Highcharts.chart(node, {
+        chart: {
+          type, height, animation: false, backgroundColor: "transparent",
+          events: type === "column" ? { render: drawColumnCaps } : undefined,
+          spacing: [8, narrowChart ? 22 : 12, 4, 0], style: { fontFamily: "Inter, sans-serif" }
+        },
+        title: { text: null },
+        credits: { enabled: false },
+        tooltip: { enabled: false },
+        legend: {
+          enabled: series.length > 1, margin: 6, padding: 1, symbolWidth: 14, itemDistance: 12,
+          itemStyle: { fontSize: compactChart ? "11px" : "12px", color: "#000" }
+        },
+        xAxis: {
+          categories: dates, tickPositions: ticks, tickLength: 0, lineColor: "#aaa",
+          labels: { overflow: "allow", style: axisLabelStyle }
+        },
+        yAxis: {
+          reversedStacks: false,
+          min: 0, title: { text: null }, tickAmount: compactChart ? 3 : 5,
+          gridLineColor: "#ccc", gridLineDashStyle: "Dot",
+          labels: {
+            style: axisLabelStyle,
+            formatter() { return (currency ? "$" : "") + compact.format(this.value); }
+          }
+        },
+        plotOptions: {
+          series: { animation: false, enableMouseTracking: false, marker: { enabled: dates.length === 1 } },
+          column: { stacking: "normal", borderWidth: 0, pointPadding: 0.02, groupPadding: 0.14 }
+        },
+        series: series.map((item, index) => ({
+          ...item, dashStyle: dash[index], lineWidth: 2,
+          color: type === "line" || !fills[index] ? dark[index] : {
+            pattern: { path: { d: fills[index], strokeWidth: 1 }, width: 5, height: 5, color: "#222" }
+          }
+        }))
+      });
+      // Keep Firefox from reserving a descender below the chart's SVG on scaled displays.
+      chart.renderer.boxWrapper.css({ display: "block" });
+      new ResizeObserver(() => {
+        const available = slotHeight();
+        if (available > 0 && available !== chart.chartHeight) chart.setSize(undefined, available, false);
+      }).observe(node);
+    })();
+  </script>
+{% endtemplate %}
+
+{% template key_budget_meter %}
+  {% if budget %}
+    <div class="flex flex--col flex--stretch-x gap--xsmall w--full">
+      {% if budget.used_percent != nil %}
+        <div class="flex flex--row flex--between gap--small">
+          <span class="label label--small">{{ budget.label }}</span>
+          <span class="label label--small">{{ budget.used_percent }}% used</span>
+        </div>
+        {% assign filled_steps = budget.used_percent | divided_by: 10 %}
+        <div class="progress-dots progress-dots--xsmall" aria-hidden="true">
+          <div class="track">
+            {% for step in (1..10) %}
+              <div class="dot{% if step <= filled_steps %} dot--filled{% endif %}"></div>
+            {% endfor %}
+          </div>
+        </div>
+      {% else %}
+        <span class="label label--small">{{ budget.label }}</span>
+      {% endif %}
+      <span class="label label--small">{{ budget.remaining | escape }} left of {{ budget.limit | escape }}</span>
+    </div>
+  {% else %}
+    <span class="label label--outline">No key cap</span>
+  {% endif %}
+{% endtemplate %}
+
+{% template key_card %}
+  <div class="flex flex--col flex--stretch-x gap--space-between border p--3 grow">
+    {% if compact %}
+      <div class="flex flex--row flex--between flex--center-y gap--small">
+        <span class="title title--small lg:title--base" data-clamp="1">{{ key.name | escape }}</span>
+        <span class="label no-shrink">{{ key.month | escape }} this month</span>
+      </div>
+    {% else %}
+      <div class="flex flex--col flex--left">
+        <span class="title title--base lg:title--large" data-clamp="1">{{ key.name | escape }}</span>
+        {% assign month_size = "xxlarge lg:landscape:value--xxxlarge" %}
+        {% if key.month.size > 6 %}{% assign month_size = "xlarge lg:landscape:value--xxlarge" %}{% endif %}
+        {% render "spend_metric" with caption: "This month", amount: key.month, size: month_size %}
+      </div>
+    {% endif %}
+    <div class="grid grid--cols-3 gap--small">
+      {% render "spend_metric" with caption: "Today", amount: key.today, size: "xsmall lg:landscape:value--small", dense: true %}
+      {% render "spend_metric" with caption: "This week", amount: key.week, size: "xsmall lg:landscape:value--small", dense: true %}
+      {% render "spend_metric" with caption: "Lifetime", amount: key.lifetime, size: "xsmall lg:landscape:value--small", dense: true %}
+    </div>
+    {% render "key_budget_meter" with budget: key.budget %}
+  </div>
+{% endtemplate %}
+
+{% template key_table %}
+  <table class="table table--small grow">
+    <thead>
+      <tr>
+        <th><span class="label">Key</span></th>
+        <th><span class="label">This month</span></th>
+        {% if detailed %}
+          <th><span class="label">Today</span></th>
+          <th><span class="label">This week</span></th>
+          <th><span class="label">Lifetime</span></th>
+        {% endif %}
+        <th><span class="label">Budget left</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for key in rows %}
+        <tr>
+          <td><span class="label" data-clamp="1">{{ key.name | escape }}</span></td>
+          <td><span class="value value--xsmall value--tnums">{{ key.month | escape }}</span></td>
+          {% if detailed %}
+            <td><span class="value value--xxsmall value--tnums">{{ key.today | escape }}</span></td>
+            <td><span class="value value--xxsmall value--tnums">{{ key.week | escape }}</span></td>
+            <td><span class="value value--xxsmall value--tnums">{{ key.lifetime | escape }}</span></td>
+          {% endif %}
+          <td>
+            {% if key.budget %}
+              <span class="label label--small">{{ key.budget.remaining | escape }}</span>
+            {% else %}
+              <span class="label label--small">No cap</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endtemplate %}

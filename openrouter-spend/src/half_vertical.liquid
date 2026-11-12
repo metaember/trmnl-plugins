@@ -1,0 +1,49 @@
+{% if history %}
+  <div class="layout layout--col layout--top layout--stretch-x gap--small">
+    <div class="no-shrink">
+      {% render "history_kpis" with history: history, columns: 2, size: "base lg:landscape:value--large", narrow: true %}
+    </div>
+    <div class="divider"></div>
+    {% render "history_heading" with history: history %}
+    {% if history.has_activity %}
+      {% render "history_chart" with history: history %}
+      {% if history.breakdown.size > 0 %}
+        <div class="divider"></div>
+        <div class="no-shrink">
+          {% render "spend_rows" with rows: history.breakdown, limit: 2, columns: 2 %}
+        </div>
+      {% endif %}
+    {% else %}
+      <span class="label">No activity in this window</span>
+    {% endif %}
+  </div>
+{% elsif key_count > 1 %}
+  <div class="layout layout--col layout--top layout--stretch-x gap--small">
+    {% render "spend_metric" with caption: "This month · all keys", amount: month, size: "large lg:landscape:value--xlarge", narrow: true %}
+    {% if key_count == 2 %}
+      {% for key in key_rows %}
+        {% render "key_card" with key: key, compact: true %}
+      {% endfor %}
+    {% else %}
+      <div class="divider"></div>
+      {% render "key_table" with rows: key_rows, detailed: false %}
+    {% endif %}
+  </div>
+{% elsif spend_available %}
+  <div class="layout layout--col layout--stretch-x gap--space-between">
+    {% render "spend_metric" with caption: "This month", amount: month, size: "xlarge lg:landscape:value--xxlarge", narrow: true %}
+    <div class="divider"></div>
+    <div class="grid grid--cols-2">
+      {% render "spend_metric" with caption: "Today", amount: today, size: "base", narrow: true %}
+      {% render "spend_metric" with caption: "This week", amount: week, size: "base", narrow: true %}
+    </div>
+    <div class="divider"></div>
+    <div class="grid grid--cols-2">
+      {% render "spend_metric" with caption: "Lifetime", amount: lifetime, size: "base", narrow: true %}
+      {% render "spend_budget" with budget: budget, size: "base" %}
+    </div>
+  </div>
+{% else %}
+  {% render "spend_unavailable" with notice: notice %}
+{% endif %}
+{% render "spend_title" with history: history, key_count: key_count, notice: notice %}

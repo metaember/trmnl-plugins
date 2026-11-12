@@ -1,0 +1,12 @@
+{
+  "data": {
+    "usage": 103.41,
+    "usage_daily": 1.27,
+    "usage_weekly": 8.63,
+    "usage_monthly": 25.5,
+    "limit": 100,
+    "limit_remaining": 74.5,
+    "limit_reset": "monthly",
+    "byok_usage_monthly": 17.38
+  }
+}
