@@ -11,6 +11,7 @@ layout improvements, and pull requests are welcome.
 | [Better Battery](better-battery/) | [Install](https://trmnl.com/recipes/217763) | Maintained revision of the published plugin | CC-BY-4.0 |
 | [LLM Benchmark Leaders](llm-benchmark-leaders/) | [Install](https://trmnl.com/recipes/101445) | Published leaderboard with portability fixes | CC-BY-4.0 |
 | [OpenRouter Drops](openrouter-drops/) | Not yet published as a recipe | New model listings, filtering and cost comparisons | MIT |
+| [Prompt Frame](prompt-frame/) | Not yet published as a recipe | Scheduled prompts rendered as briefs, charts, tables, and image cards | MIT |
 
 Each folder is a normal `trmnlp` project with `src/`, `.trmnlp.yml`, tests,
 and its own README. Account-specific plugin IDs and credentials are omitted.
@@ -34,6 +35,10 @@ Each module README also shows an alternate theme or setting.
 ### OpenRouter Drops
 
 ![OpenRouter Drops — X full screen](openrouter-drops/images/full.png)
+
+### Prompt Frame
+
+![Prompt Frame — OG full screen with sample chart data](prompt-frame/images/full.png)
 
 ## Development
 
@@ -69,7 +74,7 @@ docker run --rm -v "$PWD:/plugin" trmnl/trmnlp build --png
 ## Contributions and releases
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for tests, screenshots and pull requests.
-CI checks all three modules. It does not deploy or carry account credentials.
+CI checks each module in the table. It does not deploy or carry account credentials.
 Merging a pull request does not change a hosted recipe; releases are imported
 and verified separately by the maintainer.
 

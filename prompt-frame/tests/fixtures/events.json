@@ -1,0 +1,31 @@
+{
+  "created": 1794492600,
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "message": {
+        "content": "{\"mode\":\"list\",\"headline\":\"Three picks for tonight\",\"answer\":\"\",\"value\":\"\",\"source_url\":\"\",\"items\":[{\"title\":\"Jazz in the garden\",\"detail\":\"6:30 PM · Prospect Heights · $20\",\"source_url\":\"https://garden.example/events/jazz\"},{\"title\":\"Printmaking after hours\",\"detail\":\"7:00 PM · Gowanus · Free with RSVP\",\"source_url\":\"https://studio.example/calendar/printmaking\"},{\"title\":\"A film under the stars\",\"detail\":\"8:15 PM · Fort Greene · Free\",\"source_url\":\"https://cinema.example/series/outdoors\"}]}",
+        "annotations": [
+          {
+            "type": "url_citation",
+            "url_citation": {
+              "url": "https://garden.example/events/jazz"
+            }
+          },
+          {
+            "type": "url_citation",
+            "url_citation": {
+              "url": "https://studio.example/calendar/printmaking"
+            }
+          },
+          {
+            "type": "url_citation",
+            "url_citation": {
+              "url": "https://cinema.example/series/outdoors"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

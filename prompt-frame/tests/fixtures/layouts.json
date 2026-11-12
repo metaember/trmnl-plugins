@@ -1,0 +1,204 @@
+{
+  "metric": {
+    "headline": "Pages read this month",
+    "value": "1,240",
+    "answer": "Across six books since November 1."
+  },
+  "quote": {
+    "headline": "From the journal",
+    "value": "Field notes",
+    "answer": "Leave some room for the unexpected."
+  },
+  "compare": {
+    "headline": "Two ways into town",
+    "items": [
+      {
+        "title": "Train",
+        "detail": "25 min · Every 15 min",
+        "source_url": ""
+      },
+      {
+        "title": "Bike",
+        "detail": "35 min · Riverside path",
+        "source_url": ""
+      }
+    ]
+  },
+  "image": {
+    "headline": "Above the valley",
+    "answer": "Layered ridges fade toward a pale morning sun."
+  },
+  "bullets": {
+    "headline": "Pack for a museum day",
+    "items": [
+      {
+        "title": "Save your ticket offline",
+        "detail": "",
+        "source_url": ""
+      },
+      {
+        "title": "Bring a small water bottle",
+        "detail": "",
+        "source_url": ""
+      },
+      {
+        "title": "Pick one gallery to linger in",
+        "detail": "",
+        "source_url": ""
+      },
+      {
+        "title": "Check the last entry time",
+        "detail": "",
+        "source_url": ""
+      },
+      {
+        "title": "Leave room for a walk afterward",
+        "detail": "",
+        "source_url": ""
+      }
+    ]
+  },
+  "timeline": {
+    "headline": "Saturday at the studio",
+    "items": [
+      {
+        "title": "9:00 AM",
+        "detail": "Open the studio and set out materials.",
+        "source_url": ""
+      },
+      {
+        "title": "10:30 AM",
+        "detail": "Start the printmaking demonstration.",
+        "source_url": ""
+      },
+      {
+        "title": "1:00 PM",
+        "detail": "Break for lunch and a gallery walk.",
+        "source_url": ""
+      },
+      {
+        "title": "3:30 PM",
+        "detail": "Collect finished prints.",
+        "source_url": ""
+      }
+    ]
+  },
+  "article": {
+    "headline": "Why window light feels soft",
+    "answer": "A large window spreads light over a wider area than a small lamp. Shadows soften because light can reach the subject from many directions.\n\nCloud cover makes the effect stronger. The sky becomes an even source of light, so the difference between highlights and shadows is smaller.\n\nTry moving a cup toward the window and then away from it. Watch the edge of its shadow. That edge tells you more about the light than the brightness of the room."
+  },
+  "table": {
+    "headline": "Six library pickups",
+    "columns": [
+      "Hold",
+      "Branch",
+      "Due"
+    ],
+    "rows": [
+      [
+        "The Atlas",
+        "Central",
+        "Nov 14"
+      ],
+      [
+        "Field Notes",
+        "Park Slope",
+        "Nov 15"
+      ],
+      [
+        "Night Trains",
+        "Central",
+        "Nov 16"
+      ],
+      [
+        "Tidal Pools",
+        "Windsor Terrace",
+        "Nov 18"
+      ],
+      [
+        "Paper Cities",
+        "Pacific",
+        "Nov 20"
+      ],
+      [
+        "The Long Walk",
+        "Central",
+        "Nov 22"
+      ]
+    ]
+  },
+  "bar": {
+    "headline": "Weekend errands by travel time",
+    "value": "Minutes",
+    "points": [
+      {
+        "label": "Bakery",
+        "value": 8
+      },
+      {
+        "label": "Library",
+        "value": 14
+      },
+      {
+        "label": "Market",
+        "value": 21
+      },
+      {
+        "label": "Station",
+        "value": 32
+      }
+    ]
+  },
+  "line": {
+    "headline": "More time outdoors",
+    "value": "Minutes",
+    "points": [
+      {
+        "label": "Mon",
+        "value": 20
+      },
+      {
+        "label": "Tue",
+        "value": 35
+      },
+      {
+        "label": "Wed",
+        "value": 30
+      },
+      {
+        "label": "Thu",
+        "value": 52
+      },
+      {
+        "label": "Fri",
+        "value": 60
+      }
+    ]
+  },
+  "area": {
+    "headline": "Rain barrel filling",
+    "value": "Litres",
+    "points": [
+      {
+        "label": "8 AM",
+        "value": 8
+      },
+      {
+        "label": "9 AM",
+        "value": 12
+      },
+      {
+        "label": "10 AM",
+        "value": 25
+      },
+      {
+        "label": "11 AM",
+        "value": 40
+      },
+      {
+        "label": "Noon",
+        "value": 48
+      }
+    ]
+  }
+}

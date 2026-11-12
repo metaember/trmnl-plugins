@@ -1,0 +1,12 @@
+{
+  "created": 1794492600,
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "message": {
+        "content": "{\"mode\":\"answer\",\"headline\":\"Why bread browns\",\"answer\":\"Heat makes sugars and amino acids react on the surface, creating a golden crust and new flavors.\",\"value\":\"\",\"source_url\":\"\",\"items\":[]}",
+        "annotations": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenarios": {
+    "events": {
+      "now": "2026-11-13T01:05:00Z",
+      "custom_fields": {
+        "api_key": "test-key",
+        "city": "Brooklyn, NY"
+      },
+      "variables": {
+        "trmnl": {
+          "user": {
+            "utc_offset": -18000,
+            "time_zone_iana": "America/New_York"
+          }
+        }
+      },
+      "mocks": {
+        "POST https://openrouter.ai/api/v1/chat/completions": {
+          "json_file": "tests/fixtures/events.json"
+        }
+      },
+      "expect_text": "Jazz in the garden"
+    },
+    "chart": {
+      "custom_fields": {
+        "api_key": "test-key",
+        "preset": "custom",
+        "prompt": "Chart minutes spent outside this week.",
+        "layout": "line"
+      },
+      "mocks": {
+        "POST https://openrouter.ai/api/v1/chat/completions": {
+          "json_file": "tests/fixtures/line.json"
+        }
+      },
+      "expect_text": "Minutes"
+    },
+    "unavailable": {
+      "custom_fields": {
+        "api_key": "test-key",
+        "city": "Brooklyn, NY"
+      },
+      "mocks": {
+        "POST https://openrouter.ai/api/v1/chat/completions": {
+          "status": 500,
+          "body": ""
+        }
+      },
+      "expect_text": "No brief yet"
+    }
+  }
+}

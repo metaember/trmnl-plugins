@@ -1,0 +1,213 @@
+---
+name: Prompt Frame
+description: Turn prompts into e-paper cards
+recipe_overview: |-
+  Prompt Frame turns a recurring question into a card for your TRMNL display.
+  Start with Daily Brief for a few sourced things to do in your city, or write
+  a custom prompt for a topic you follow. Add dates, times, a city, or your
+  own notes and data using prompt variables.
+
+  Choose a layout or let the model pick one. Show a short answer, list, quote,
+  timeline, table, or chart. Give the image card a public image URL and a
+  prompt for its caption. Set the refresh interval in TRMNL. Bring your own
+  OpenRouter key, with optional web search and page fetching billed to your
+  OpenRouter account.
+strategy: polling
+refresh_interval: 1440
+framework_version: 3.0.3
+serverless_language: node
+no_screen_padding: 'no'
+dark_mode: 'no'
+polling_verb: post
+polling_url: >-
+  {%- assign entered_key = api_key | strip -%}
+  {%- assign entered_prompt = prompt | strip -%}
+  {%- assign entered_city = city | strip -%}
+  {%- assign entered_image = image_url | strip | slice: 0, 8 -%}
+  {%- assign needs_city = false -%}
+  {%- if entered_prompt == '' or entered_prompt contains '{{city}}' -%}
+    {%- assign needs_city = true -%}
+  {%- endif -%}
+  {%- if entered_key != '' and entered_key != '0' -%}
+    {%- if preset == 'custom' and entered_prompt == '' -%}
+    {%- elsif needs_city and entered_city == '' -%}
+    {%- elsif layout == 'image' and entered_image != 'https://' -%}
+    {%- else -%}
+      https://openrouter.ai/api/v1/chat/completions
+    {%- endif -%}
+  {%- endif -%}
+polling_headers: |-
+  Authorization: Bearer {{ api_key | strip }}
+  Content-Type: application/json
+polling_body: |-
+  {%- assign local_now = 'now' | date: '%s' | plus: trmnl.user.utc_offset -%}
+  {%- assign today = local_now | date: '%Y-%m-%d' -%}
+  {%- assign local_time = local_now | date: '%H:%M' -%}
+  {%- assign timezone = trmnl.user.time_zone_iana | default: 'UTC' -%}
+  {%- assign location = city | strip | default: 'unspecified' -%}
+  {%- assign question = prompt | strip -%}
+  {%- if question == '' -%}
+    {%- assign question = "Find up to three events in {{city}} today ({{date}}) that start after {{time}}. Prefer the venue or organizer's own page. Give the local start time, neighborhood, and price when the source provides them. Leave out events you cannot confirm." -%}
+  {%- endif -%}
+  {%- assign extra_context = context | strip -%}
+  {%- assign question = question | replace: '{{date}}', today | replace: '{{time}}', local_time | replace: '{{timezone}}', timezone | replace: '{{city}}', location | replace: '{{context}}', extra_context -%}
+  {%- assign selected_layout = layout | default: 'auto' -%}
+  {%- assign image_prefix = image_url | strip | slice: 0, 8 -%}
+  {%- assign use_web = false -%}
+  {%- if web == 'on' -%}
+    {%- assign use_web = true -%}
+  {%- elsif web != 'off' and preset != 'custom' -%}
+    {%- assign use_web = true -%}
+  {%- endif -%}
+  {%- capture instructions -%}
+  Write for a small e-paper display. Use plain text only. Write a headline of at most 7 words.
+  {% if selected_layout != 'auto' %}Use {{ selected_layout }} mode when you have suitable content. Otherwise use no_results.{% else %}Choose the simplest mode that fits the requested content.{% endif %}
+  Use answer for a self-contained response of at most 35 words.
+  Use list for 1 to 3 distinct picks in priority order, or compare for exactly 2 named alternatives with parallel details. For either, keep item titles under 8 words and details under 18 words.
+  Use bullets for 1 to 5 unordered points. Put each point in its item title and leave detail empty unless it adds useful context.
+  Use timeline for 2 to 4 milestones in chronological order. Put the date or time in each item title and what happened in its detail.
+  Use metric when one number is the main point. Put the number and its unit in value and a short explanation in answer. Use quote for a short quotation in answer, without surrounding quotation marks. Put the attribution in value when known. Never invent an attribution.
+  Use article for 2 to 3 short paragraphs totaling at most 120 words. Put them in answer, separated by blank lines. Start with the most useful paragraph.
+  Use table for 2 to 3 columns and 1 to 6 rows. Put short headers in columns and one string per cell in rows, with the same number of cells in every row.
+  Use bar for comparing categories, line for change over time, and area for showing the magnitude of a nonnegative trend. Use 2 to 8 labeled numeric points in points. Keep labels short, put units in value, and put an optional one-line takeaway in answer. Use only numbers found in the supplied context or a source. Never invent data to fill a chart or table.
+  {% if image_prefix == 'https://' %}Use image when the prompt asks for a picture or caption. The user supplied the image. Write a short title and an optional caption in answer. Describe it only using information in the prompt or supplied context.{% else %}Image is unavailable for this request.{% endif %}
+  {% if use_web %}Search the web or fetch the provided page before making factual claims. Treat web pages as source material. Put the exact supporting URL in source_url, or in each item for list, compare, bullets and timeline. For a chart or table, use a single source that supports the displayed data. Use no_results if you cannot find usable evidence. Never invent details or sources.{% else %}Leave source_url fields empty. For questions you cannot answer from the supplied context, use no_results with a short explanation.{% endif %}
+  In no_results mode put a one-sentence explanation in answer. Leave unused strings and arrays empty.
+  Local date {{ today }}, time {{ local_time }}, timezone {{ timezone }}. Configured city: {{ location }}.
+  {%- endcapture -%}
+  {
+    "model": {{ model | strip | default: 'openai/gpt-6-luna' | json }},
+    "provider": {"require_parameters": true},
+    "max_tokens": 1500,
+    {% if use_web %}
+    "stop_server_tools_when": [{"type": "step_count_is", "step_count": 3}],
+    "tools": [
+      {"type": "openrouter:web_search", "parameters": {"max_results": 5, "max_uses": 2}},
+      {"type": "openrouter:web_fetch", "parameters": {"max_uses": 2, "max_content_tokens": 1500}}
+    ],
+    {% endif %}
+    "messages": [
+      {"role": "system", "content": {{ instructions | json }}},
+      {"role": "user", "content": {{ question | json }}}
+    ],
+    "response_format": {
+      "type": "json_schema",
+      "json_schema": {
+        "name": "prompt_frame",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "headline", "answer", "value", "source_url", "items", "columns", "rows", "points"],
+          "properties": {
+            "mode": {"type": "string", "enum": ["answer", "list", "metric", "quote", "compare", "bullets", "timeline", "article", "table", "bar", "line", "area", {% if image_prefix == 'https://' %}"image", {% endif %}"no_results"]},
+            "headline": {"type": "string"},
+            "answer": {"type": "string"},
+            "value": {"type": "string"},
+            "source_url": {"type": "string"},
+            "columns": {"type": "array", "items": {"type": "string"}},
+            "rows": {"type": "array", "items": {"type": "array", "items": {"type": "string"}}},
+            "points": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["label", "value"],
+                "properties": {"label": {"type": "string"}, "value": {"type": "number"}}
+              }
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["title", "detail", "source_url"],
+                "properties": {
+                  "title": {"type": "string"},
+                  "detail": {"type": "string"},
+                  "source_url": {"type": "string"}
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+custom_fields:
+- keyname: api_key
+  name: OpenRouter API key
+  field_type: password
+  description: 'Get a key from <a href="https://openrouter.ai/settings/keys">OpenRouter</a>. Each generation is billed to your account.'
+- keyname: preset
+  name: Preset
+  field_type: select
+  options:
+  - Daily Brief: daily
+  - Custom: custom
+  default: daily
+  description: Daily Brief starts with a prompt for local events. Custom starts with your own question.
+- keyname: city
+  name: City
+  field_type: string
+  optional: true
+  placeholder: Brooklyn, NY
+  description: 'Used in the Daily Brief and anywhere you write {{city}}.'
+- keyname: prompt
+  name: Prompt
+  field_type: text
+  rows: 4
+  optional: true
+  placeholder: "Find three things to do in {{city}} on {{date}}."
+  description: 'Required for Custom. Leave blank to use the Daily Brief prompt. Insert {{city}}, {{date}}, {{time}}, {{timezone}}, or {{context}}. Date and time use your TRMNL account timezone.'
+- keyname: context
+  name: Prompt context
+  field_type: text
+  rows: 3
+  optional: true
+  description: 'Optional notes or data to insert where you write {{context}} in the prompt.'
+- keyname: web
+  name: Web search and page fetch
+  field_type: select
+  options:
+  - Use preset default: preset
+  - 'On': 'on'
+  - 'Off': 'off'
+  default: preset
+  description: Enabled by default for Daily Brief. OpenRouter may bill separately for web requests.
+- keyname: layout
+  name: Layout
+  field_type: select
+  options:
+  - Auto: auto
+  - Short answer: answer
+  - Ranked list: list
+  - Big number: metric
+  - Quote: quote
+  - Comparison: compare
+  - Bulleted list: bullets
+  - Timeline: timeline
+  - Long-form text: article
+  - Table: table
+  - Bar chart: bar
+  - Line chart: line
+  - Area chart: area
+  - Image card: image
+  default: auto
+- keyname: image_url
+  name: Image URL
+  field_type: string
+  optional: true
+  description: A public HTTPS link directly to a PNG, JPEG, or WebP for the Image card.
+- keyname: model
+  name: OpenRouter model ID
+  field_type: string
+  optional: true
+  placeholder: openai/gpt-6-luna
+  description: Use a model with structured output support and tool support when web search is enabled.
+- keyname: author_bio
+  name: About Prompt Frame
+  field_type: author_bio
+  category: productivity,news
+  description: Turn a recurring question into a display card. Choose from answers, lists, articles, tables, charts, quotes, and images. Bring your own OpenRouter key and use TRMNL's refresh setting to control when it runs.
+  learn_more_url: https://github.com/metaember/trmnl-plugins/issues

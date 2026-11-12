@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        module: [better-battery, llm-benchmark-leaders, openrouter-drops]
+        module: [better-battery, llm-benchmark-leaders, openrouter-drops, prompt-frame]
     steps:
       - uses: actions/checkout@v6
         with:

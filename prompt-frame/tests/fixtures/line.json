@@ -1,0 +1,12 @@
+{
+  "created": 1794492600,
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "message": {
+        "content": "{\"mode\":\"line\",\"headline\":\"More time outdoors\",\"answer\":\"\",\"value\":\"Minutes\",\"source_url\":\"\",\"items\":[],\"columns\":[],\"rows\":[],\"points\":[{\"label\":\"Mon\",\"value\":20},{\"label\":\"Tue\",\"value\":35},{\"label\":\"Wed\",\"value\":30},{\"label\":\"Thu\",\"value\":52},{\"label\":\"Fri\",\"value\":60}]}",
+        "annotations": []
+      }
+    }
+  ]
+}
