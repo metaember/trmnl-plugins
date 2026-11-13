@@ -1,0 +1,36 @@
+#
+# Changes to this file will be overwritten by `trmnlp pull`.
+#
+# Docs: https://help.trmnl.com/en/articles/10542599-importing-and-exporting-private-plugins#h_581fb988f0
+#
+---
+strategy: static
+static_data: '{}'
+serverless_language: node
+no_screen_padding: 'yes'
+dark_mode: 'no'
+framework_version: 3.3.0
+custom_fields:
+  - keyname: terminal_screen
+    field_type: select
+    name: Screen
+    options:
+      - 'Boarding Pass': boarding_pass
+      - 'Departure Board': departure_board
+      - 'System Status': system_status
+      - 'Mission Brief': mission_brief
+      - 'Docking Clearance': docking_clearance
+      - 'Signal Intercept': signal_intercept
+      - 'Surface Survey': surface_survey
+      - 'Daily Rotation': rotation
+    default: rotation
+  - keyname: author_bio
+    field_type: author_bio
+    name: About Space Terminal
+    category: art,entertainment
+    description: A fictional spaceport for your e-paper display. Check in for a flight, read the departure board, monitor ship systems, get a mission or docking assignment, intercept a signal, or survey the surface of a moon. Pick a screen or let them rotate daily.
+    email_address: trmnl@chrls.io
+    learn_more_url: https://github.com/metaember/trmnl-plugins/blob/main/space-terminal/README.md
+name: Space Terminal
+description: Procedural spaceflight screens.
+refresh_interval: 60

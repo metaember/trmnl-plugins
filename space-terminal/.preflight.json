@@ -1,0 +1,57 @@
+{
+  "default_preview": {
+    "now": "2026-11-18T00:00:00Z",
+    "expect_text": "DUNE BASINS"
+  },
+  "scenarios": {
+    "boarding_pass": {
+      "now": "2026-11-14T00:00:00Z",
+      "custom_fields": {
+        "terminal_screen": "boarding_pass"
+      },
+      "expect_text": "KS7762"
+    },
+    "departure_board": {
+      "now": "2026-11-14T00:00:00Z",
+      "custom_fields": {
+        "terminal_screen": "departure_board"
+      },
+      "expect_text": "TRANSFERS"
+    },
+    "system_status": {
+      "now": "2026-11-16T00:00:00Z",
+      "custom_fields": {
+        "terminal_screen": "system_status"
+      },
+      "expect_text": "CRITICAL"
+    },
+    "mission_brief": {
+      "now": "2026-11-16T00:00:00Z",
+      "custom_fields": {
+        "terminal_screen": "mission_brief"
+      },
+      "expect_text": "OPERATION STARDUST"
+    },
+    "docking_clearance": {
+      "now": "2026-11-16T00:00:00Z",
+      "custom_fields": {
+        "terminal_screen": "docking_clearance"
+      },
+      "expect_text": "HOLD FOR TRAFFIC"
+    },
+    "signal_intercept": {
+      "now": "2026-11-18T00:00:00Z",
+      "custom_fields": {
+        "terminal_screen": "signal_intercept"
+      },
+      "expect_text": "DISTRESS BEACON"
+    },
+    "surface_survey": {
+      "now": "2026-11-13T00:00:00Z",
+      "custom_fields": {
+        "terminal_screen": "surface_survey"
+      },
+      "expect_text": "CROSS DUNES"
+    }
+  }
+}
