@@ -50,6 +50,28 @@ RSpec.describe "AI Prompt Frame" do
     end
   end
 
+  [
+    [12, ".highcharts-line-series", "Lunar power"],
+    [13, "table tbody tr", "Lunar crew schedule"],
+    [14, ".layout .item", "Rover cleared for the crater rim"]
+  ].each do |day, selector, text|
+    it "shows the rotating demo without an OpenRouter request on November #{day}" do
+      screen = trmnl.render(view: "full", now: Time.utc(2026, 11, day, 12))
+      expect(screen.result.requests).to be_empty
+      expect(screen).to have_css(selector).and(have_text(text)).and(have_text("Demo data"))
+      expect(screen).to have_text("Add an OpenRouter API key in plugin settings.")
+      if day == 12
+        chart_share = screen.evaluate(<<~JS)
+          (() => {
+            const chart = document.querySelector('.highcharts-root');
+            return chart.getBoundingClientRect().height / chart.closest('.layout').clientHeight;
+          })()
+        JS
+        expect(chart_share).to be > 0.75
+      end
+    end
+  end
+
   %w[og_png v2].product({ "full" => 3, "half_horizontal" => 2, "half_vertical" => 3, "quadrant" => 1 }.to_a).each do |device, (view, count)|
     it "draws #{count} ranked picks in #{view} on #{device}" do
       screen = trmnl.render(view:, device:, mocks:, now:, custom_fields:, variables:)

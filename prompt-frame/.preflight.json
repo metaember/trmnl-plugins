@@ -1,5 +1,17 @@
 {
+  "default_preview": {
+    "now": "2026-11-12T12:00:00Z",
+    "expect_text": "Lunar power"
+  },
   "scenarios": {
+    "demo-crew": {
+      "now": "2026-11-13T12:00:00Z",
+      "expect_text": "Demo data"
+    },
+    "demo-shift": {
+      "now": "2026-11-14T12:00:00Z",
+      "expect_text": "Demo data"
+    },
     "events": {
       "now": "2026-11-13T01:05:00Z",
       "custom_fields": {
