@@ -1,5 +1,5 @@
-{% assign screen = trmnl.plugin_settings.custom_fields_values.terminal_screen | default: 'boarding_pass' %}
-{% if screen == 'rotation' %}{% assign screen = IDX_0.rotation | default: rotation | default: 'boarding_pass' %}{% endif %}
+{% assign screen = trmnl.plugin_settings.custom_fields_values.terminal_screen | default: 'rotation' %}
+{% if screen == 'rotation' %}{% assign screen = IDX_0.rotation | default: rotation | default: 'surface_survey' %}{% endif %}
 {% assign screen = IDX_0.active_screen | default: active_screen | default: IDX_0.preview_screen | default: preview_screen | default: screen %}
 {% assign dock = IDX_0.docking_clearance | default: docking_clearance %}
 {% assign signal = IDX_0.signal_intercept | default: signal_intercept %}

@@ -23,7 +23,7 @@ custom_fields:
       - 'Signal Intercept': signal_intercept
       - 'Surface Survey': surface_survey
       - 'Daily Rotation': rotation
-    default: boarding_pass
+    default: rotation
   - keyname: author_bio
     field_type: author_bio
     name: About Space Terminal

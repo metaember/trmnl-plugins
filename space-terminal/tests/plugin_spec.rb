@@ -33,7 +33,7 @@ RSpec.describe 'Space Terminal' do
     end
   end
 
-  it 'generates a boarding pass with shipped defaults' do
+  it 'renders the scheduled Surface Survey with shipped defaults' do
     preview = config.fetch('default_preview')
     screen = trmnl.render(view: 'quadrant', device: 'og_png', now: preview.fetch('now'))
     expect(screen).to have_text(preview.fetch('expect_text')).and(have_no_transform_error)

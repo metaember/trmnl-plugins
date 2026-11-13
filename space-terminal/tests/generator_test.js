@@ -6,7 +6,7 @@ import { barcodeBars, boardingPass, screenPayload, terminalPayload } from '../ge
 import { screenNames } from '../screens.mjs';
 import { fleet } from '../fleet.mjs';
 
-test('the bundled TRMNL transform selects each preset and falls back to boarding pass', () => {
+test('the bundled TRMNL transform selects each preset and defaults to Daily Rotation', () => {
   const bundle = readFileSync(new URL('../src/transform.js', import.meta.url), 'utf8');
   const date = new Date('2026-11-14T00:00:00Z');
   const payload = terminalPayload(date);
@@ -22,7 +22,7 @@ test('the bundled TRMNL transform selects each preset and falls back to boarding
     console.log(JSON.stringify(inputs.map(run)));
   `], { input: JSON.stringify([...inputs, {}]), encoding: 'utf8' });
   assert.equal(execution.status, 0, execution.stderr);
-  const expected = [...presets, undefined].map(preset => screenPayload(payload, preset) ?? screenPayload(payload, 'boarding_pass'));
+  const expected = [...presets, undefined].map(preset => screenPayload(payload, preset) ?? screenPayload(payload, 'rotation'));
   assert.deepEqual(JSON.parse(execution.stdout), expected);
 });
 

@@ -66,9 +66,9 @@ by Helena Zhang, distributed under the SIL Open Font License.
 
 2. In TRMNL, choose **Private Plugins → Import new** and select the ZIP.
    [TRMNL import instructions](https://help.trmnl.com/en/articles/10542599-importing-and-exporting-private-plugins)
-3. Choose a **Screen** or **Daily Rotation** in the plugin settings. The
-   default is Boarding Pass. TRMNL uses a 60-minute refresh interval. You can
-   add the [plugin icon](docs/icon.png) from the settings page.
+3. By default, **Daily Rotation** shows a different preset each UTC day. To stick with
+   one preset, choose it under **Screen**. TRMNL uses a 60-minute refresh
+   interval. You can add the [plugin icon](docs/icon.png) from the settings page.
 
 The Static strategy and Serverless Node runtime generate the data on TRMNL.
 Setup requires no API key or separate JSON server.
