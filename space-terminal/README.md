@@ -4,21 +4,22 @@ A fictional spaceport on TRMNL e-paper. Check your gate, scan a moon, or tune
 into a distress beacon. Pick one of seven screens in the Private Plugin
 settings, or choose **Daily Rotation** to cycle through them by UTC date.
 
-![Boarding Pass with the route from Enceladus to Alpha Centauri, gate, seat, and a barcode](docs/screenshots/boarding-pass.png)
+![Surface Survey of Luna showing two impact craters, shaded rims, and two marked survey sites](docs/screenshots/surface-survey-twin-impacts.png)
 
-**Boarding Pass.** The day's passenger, route, gate, seat, and decorative barcode
-come from the date seed. Boarding starts 30 minutes before departure.
+**Surface Survey.** Explore twelve landform families across Europa, Luna, Mars,
+and Titan. Contours show elevation, and shaded slopes and site markers help
+read the terrain.
 
 ## The other six screens
 
 | | |
 | --- | --- |
+| ![Mission brief with the Nursery spacecraft, orbital transfer diagram, and vessel gauges](docs/screenshots/mission-brief.png) | ![Signal Intercept showing an SOS distress beacon at 121.500 MHz](docs/screenshots/signal-intercept.png) |
+| **Mission Brief.** Twelve ship silhouettes cycle through seeded missions with changing fuel, oxygen, power, and hull readings. | **Signal Intercept.** Six procedural waveforms include chirps, pulse trains, quiet scans, and an SOS distress beacon. |
+| ![Docking clearance with a traffic hold and a station approach diagram](docs/screenshots/docking-clearance.png) | ![Boarding Pass with the route from Enceladus to Alpha Centauri, gate, seat, and a barcode](docs/screenshots/boarding-pass.png) |
+| **Docking Clearance.** Get a berth and approach bearing for the day's ship. The station diagram highlights the assigned sector. | **Boarding Pass.** The day's passenger, route, gate, seat, and decorative barcode come from the date seed. Boarding starts 30 minutes before departure. |
 | ![Transfer board with times, gates, and connection statuses](docs/screenshots/departure-board.png) | ![Critical system status with six meters and two telemetry charts](docs/screenshots/system-status.png) |
 | **Departure Board.** Switches among departures, arrivals, and transfers, each with its own status vocabulary. | **System Status.** Six subsystem meters, three operating states, and six temperature trends. |
-| ![Mission brief with the Nursery spacecraft, orbital transfer diagram, and vessel gauges](docs/screenshots/mission-brief.png) | ![Docking clearance with a traffic hold and a station approach diagram](docs/screenshots/docking-clearance.png) |
-| **Mission Brief.** Twelve ship silhouettes cycle through seeded missions with changing fuel, oxygen, power, and hull readings. | **Docking Clearance.** Get a berth and approach bearing for the day's ship. The station diagram highlights the assigned sector. |
-| ![Signal Intercept showing an SOS distress beacon at 121.500 MHz](docs/screenshots/signal-intercept.png) | ![Surface Survey showing two marked sites on a contour map of Titan](docs/screenshots/surface-survey.png) |
-| **Signal Intercept.** Six procedural waveforms include chirps, pulse trains, quiet scans, and an SOS distress beacon. | **Surface Survey.** Twelve landform families across Europa, Luna, Mars, and Titan. Contours show elevation, and shaded slopes and site markers help read the terrain. |
 
 ## Full screen and mashups
 
