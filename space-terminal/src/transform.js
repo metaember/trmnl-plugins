@@ -129,6 +129,7 @@ var spaceTerminal = (() => {
   var mapWidth = 560;
   var mapHeight = 350;
   var gaussian = (distance, width) => Math.exp(-((distance / width) ** 2));
+  var contourBudget = 3420;
   var features = [
     ["ICE RIDGE", "FRACTURE ZONE", "PRESSURE DOMES"],
     ["CRATER RIM", "TWIN IMPACTS", "CRATER CHAIN"],
@@ -136,18 +137,30 @@ var spaceTerminal = (() => {
     ["DUNE FIELD", "DUNE BASINS", "CROSS DUNES"]
   ];
   function heightfield(world, seed, variant) {
-    const phase = seed * 0.071;
-    const angle = phase * 0.77;
+    let state = Math.imul(seed + 1, 2654435761) >>> 0;
+    const sample = () => {
+      state = Math.imul(state, 1664525) + 1013904223 >>> 0;
+      return state / 4294967296;
+    };
+    const phase = sample() * 2 * Math.PI;
+    const angle = sample() * 2 * Math.PI;
+    const shiftX = (sample() - 0.5) * 0.21;
+    const shiftY = (sample() - 0.5) * 0.21;
+    const scale = 0.88 + 0.28 * sample();
+    const strike = 0.9 + 0.4 * sample();
+    const bendStrength = 0.06 + 0.05 * sample();
     const c = Math.cos(angle);
     const s = Math.sin(angle);
     return (u, v) => {
-      const x = c * (u - 0.5) - s * (v - 0.5);
-      const y = s * (u - 0.5) + c * (v - 0.5);
+      const east = c * (u - 0.5) - s * (v - 0.5);
+      const north = s * (u - 0.5) + c * (v - 0.5);
+      const x = scale * east + shiftX + bendStrength * Math.sin(5 * north + phase);
+      const y = scale * north + shiftY + bendStrength * Math.sin(6 * east - phase);
       const wave = Math.sin(9 * x + 7 * y + phase);
       const detail = 0.023 * Math.sin(35 * x - 20 * y + phase) + 0.016 * Math.cos(49 * y + 17 * x - phase) + 0.011 * Math.sin(61 * x + 56 * y + 2 * phase) + 8e-3 * Math.sin(85 * y - 38 * x + phase);
       const hill = (cx, cy, wx, wy) => gaussian(x - cx, wx) * gaussian(y - cy, wy);
       if (world === 0) {
-        const bend = y + 0.57 * x + 0.055 * Math.sin(13 * x + phase);
+        const bend = y + 0.57 * strike * x + 0.08 * Math.sin(11 * x + phase);
         if (variant === 1) {
           return -0.91 * gaussian(bend, 0.075) - 0.57 * gaussian(y - 0.77 * x - 0.17, 0.065) + 0.38 * hill(-0.25, 0.2, 0.28, 0.17) + 0.19 * wave + detail;
         }
@@ -163,7 +176,7 @@ var spaceTerminal = (() => {
         const impact = (cx, cy, size) => {
           const dx = x - cx;
           const dy = (y - cy) * 0.82;
-          const radius = Math.hypot(dx, dy) / size;
+          const radius = Math.hypot(dx, dy * strike) / size;
           const rim = 1 + 0.045 * Math.sin(Math.atan2(dy, dx) * 6 + phase);
           return 0.47 * gaussian(radius - rim, 0.13) - 0.74 * gaussian(radius, 0.67);
         };
@@ -174,7 +187,7 @@ var spaceTerminal = (() => {
         return impact(-0.08, 0.02, 0.27 + 0.022 * Math.sin(phase)) + 0.69 * impact(0.28, -0.27, 0.14) + 0.37 * impact(-0.35, 0.34, 0.12) + 0.2 * x + 0.07 * wave + detail;
       }
       if (world === 2) {
-        const valley = y - 0.3 * x - 0.11 * Math.sin(8 * x + phase);
+        const valley = y - 0.3 * strike * x - 0.13 * Math.sin(8 * x + phase);
         const branch = y + 0.57 * x - 0.13 - 0.045 * Math.sin(14 * x - phase);
         if (variant === 1) {
           return 0.94 * Math.tanh(2.7 * hill(-0.17, 0.03, 0.32, 0.24)) + 0.67 * Math.tanh(2.9 * hill(0.3, 0.24, 0.2, 0.19)) - 0.27 * gaussian(branch, 0.09) + 0.2 * y + detail;
@@ -190,7 +203,10 @@ var spaceTerminal = (() => {
       const warp = 1.3 * Math.sin(7 * x + 4 * y + phase) + 0.45 * Math.sin(15 * x - phase);
       const dunes = Math.sin(30 * y + 19 * x + warp);
       if (variant === 1) return 0.43 * dunes - 0.82 * hill(0.03, 0.03, 0.38, 0.29) + 0.25 * wave + detail;
-      if (variant === 2) return 0.46 * dunes + 0.44 * Math.sin(27 * x - 21 * y + warp) + 0.19 * wave + detail;
+      if (variant === 2) {
+        const crosswind = Math.sin(27 * x - 21 * y + warp);
+        return (0.49 + 0.12 * wave) * dunes + 0.38 * crosswind + 0.14 * wave + detail;
+      }
       return (0.63 + 0.19 * Math.cos(8 * x + phase)) * dunes + 0.27 * wave + 0.32 * x + detail;
     };
   }
@@ -278,9 +294,10 @@ var spaceTerminal = (() => {
       ...simplify(line.slice(split), tolerance)
     ];
   }
-  function svgPaths(paths, tolerance) {
+  function svgPaths(paths, tolerance, compact = false) {
     return paths.map(({ line, closed }) => {
-      const points = simplify(line, tolerance).map(([x, y]) => [Math.round(x), Math.round(y)]);
+      const step = compact ? 2 : 1;
+      const points = simplify(line, tolerance).map(([x, y]) => [step * Math.round(x / step), step * Math.round(y / step)]);
       if (closed && points.length < 4) return "";
       const vertices = closed ? points.slice(0, -1) : points;
       if (points.length < 3) {
@@ -293,12 +310,13 @@ var spaceTerminal = (() => {
       for (const [index, control] of steps.entries()) {
         const next = vertices[(index + (closed ? 1 : 2)) % vertices.length];
         const end = midpoint(control, next);
-        result += [
-          control[0] - current[0],
-          control[1] - current[1],
-          end[0] - current[0],
-          end[1] - current[1]
-        ].join(" ") + " ";
+        const destination = [end[0] - current[0], end[1] - current[1]];
+        if (!compact || index === 0) {
+          result += [control[0] - current[0], control[1] - current[1], ...destination].join(" ") + " ";
+        } else {
+          if (index === 1) result = result.trimEnd() + "t";
+          result += destination.join(" ") + " ";
+        }
         current = end;
       }
       return result.trimEnd().replace(/ (?=-)/g, "") + (closed ? "Z" : "L" + vertices.at(-1).join(" "));
@@ -316,6 +334,13 @@ var spaceTerminal = (() => {
     }
     const area = Math.abs(twiceArea) / 2;
     return area >= minArea && 2 * area >= minWidth * perimeter;
+  }
+  function contourLength({ line }) {
+    let length = 0;
+    for (let i = 1; i < line.length; i++) {
+      length += Math.hypot(line[i][0] - line[i - 1][0], line[i][1] - line[i - 1][1]);
+    }
+    return length;
   }
   function reliefBands(field, range) {
     const stride = columns + 1;
@@ -345,8 +370,8 @@ var spaceTerminal = (() => {
     const field = points.map(([x, y]) => height(x, y));
     const min = Math.min(...field);
     const range = Math.max(...field) - min;
-    const interval = Math.round(relief / 8);
-    const levels = Array.from({ length: 7 }, (_, level) => isolines(field, min + range * (level + 1) * interval / relief));
+    const interval = Math.max(1, Math.round(relief / 14));
+    const levels = Array.from({ length: Math.ceil(relief / interval) - 1 }, (_, level) => isolines(field, min + range * (level + 1) * interval / relief).map((path) => ({ ...path, length: contourLength(path) })));
     const bands = reliefBands(field, range);
     const shading = bands.map((paths) => {
       let band = "";
@@ -357,11 +382,19 @@ var spaceTerminal = (() => {
       return band;
     });
     const elevations = sites.map(({ x, y }) => Math.round(relief * (height(x / mapWidth, y / mapHeight) - min) / range));
-    for (let tolerance = 1.5; ; tolerance *= 1.3) {
-      const contours = levels.map((paths) => svgPaths(paths, tolerance));
-      if (contours.join("").length + shading.join("").length <= 3420) {
-        return { feature: features[world][variant], contours, shading, interval, elevations };
+    const budget = contourBudget - shading.join("").length;
+    for (let tolerance = 2.2; ; tolerance *= 1.25) {
+      const candidates = levels.map((paths) => paths.filter((path) => path.length >= 12).sort((a, b) => b.length - a.length).map((path) => ({ length: path.length, svg: svgPaths([path], tolerance, true) })).filter((path) => path.svg));
+      const contours = candidates.map((paths) => paths[0]?.svg ?? "");
+      let remaining = budget - contours.join("").length;
+      if (remaining < 0) continue;
+      const extra = candidates.flatMap((paths, level) => paths.slice(1).map((path) => ({ ...path, level }))).sort((a, b) => b.length - a.length);
+      for (const { svg, level } of extra) {
+        if (svg.length > remaining) continue;
+        contours[level] += svg;
+        remaining -= svg.length;
       }
+      return { feature: features[world][variant], contours, shading, interval, elevations };
     }
   }
 

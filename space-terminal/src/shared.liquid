@@ -795,10 +795,10 @@
   .st-survey-contours {
     fill: none;
     stroke: black;
-    stroke-width: 1.4;
+    stroke-width: 1.15;
     stroke-linejoin: round;
   }
-  .st-survey-index { stroke-width: 2.2; }
+  .st-survey-index { stroke-width: 1.9; }
   .st-survey-notes {
     display: grid;
     align-content: center;
@@ -930,10 +930,10 @@
   <g>
 {% endif %}
   {% render "terminal_survey_relief" with survey: survey, depth: depth %}
-  <g fill="none" stroke="black" stroke-width="1.8" stroke-linejoin="round">
+  <g fill="none" stroke="black" stroke-width="1.25" stroke-linejoin="round">
     {% for contour in survey.contours %}
-      {% assign index_contour = forloop.index | modulo: 3 %}
-      <path{% if index_contour == 0 %} stroke-width="2.4"{% endif %} d="{{ contour | escape }}"/>
+      {% assign index_contour = forloop.index | modulo: 5 %}
+      <path{% if index_contour == 0 %} stroke-width="2"{% endif %} d="{{ contour | escape }}"/>
     {% endfor %}
   </g>
   <circle cx="{{ survey.site_x | plus: 0 }}" cy="{{ survey.site_y | plus: 0 }}" r="10" fill="black" stroke="white" stroke-width="4"/>

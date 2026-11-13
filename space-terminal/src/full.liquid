@@ -65,7 +65,7 @@
         {% render "terminal_survey_relief" with survey: survey, depth: survey_depth %}
         <g class="st-survey-contours">
           {% for contour in survey.contours %}
-            {% assign contour_index = forloop.index | modulo: 3 %}
+            {% assign contour_index = forloop.index | modulo: 5 %}
             <path{% if contour_index == 0 %} class="st-survey-index"{% endif %} d="{{ contour | escape }}"/>
           {% endfor %}
         </g>

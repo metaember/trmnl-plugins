@@ -72,7 +72,7 @@ test('new screens use the mission vessel, stable signals, and bounded map marker
   assert.match(dock.destination, new RegExp(`^${survey.world} `));
   assert.deepEqual(signal, terminalPayload(new Date('2026-11-11T23:59:59Z')).signal_intercept);
   assert.equal(signal.trace.split(' ').length, 126);
-  assert.equal(survey.contours.length, 7);
+  assert.ok(survey.contours.filter(Boolean).length >= 10);
   assert.equal(survey.shading.length, 2);
   assert.match(survey.shading[0], /^M.*Z$/);
   assert.ok(survey.interval > 0);
@@ -135,11 +135,11 @@ test('survey worlds produce distinct deterministic maps within the polling budge
     assert.equal(survey.world, world);
     assert.deepEqual(payload, preview('T23:59:59Z'));
     assert.ok(Buffer.byteLength(JSON.stringify(payload)) < 4096);
-    assert.ok(survey.contours.every(path => path.startsWith('M')));
+    assert.ok(survey.contours.filter(Boolean).length >= 10);
+    assert.ok(survey.contours.every(path => !path || path.startsWith('M')));
     assert.equal(survey.shading.length, 2);
     assert.match(survey.shading[0], /^M.*Z$/);
     assert.ok(survey.shading.every(path => !path || /^M.*Z$/.test(path)));
-    if (world === 'EUROPA') assert.equal(survey.shading[0].split('M').length - 1, 1);
     assert.equal(survey.elevations.length, survey.site_b ? 2 : 1);
     assert.ok(survey.elevations.every(elevation => elevation >= 0 && elevation <= survey.relief));
     if (survey.site_b) {

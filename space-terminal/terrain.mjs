@@ -4,6 +4,7 @@ const mapWidth = 560;
 const mapHeight = 350;
 
 const gaussian = (distance, width) => Math.exp(-((distance / width) ** 2));
+const contourBudget = 3420;
 const features = [
   ['ICE RIDGE', 'FRACTURE ZONE', 'PRESSURE DOMES'],
   ['CRATER RIM', 'TWIN IMPACTS', 'CRATER CHAIN'],
@@ -12,13 +13,25 @@ const features = [
 ];
 
 function heightfield(world, seed, variant) {
-  const phase = seed * 0.071;
-  const angle = phase * 0.77;
+  let state = Math.imul(seed + 1, 0x9e3779b1) >>> 0;
+  const sample = () => {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+    return state / 0x100000000;
+  };
+  const phase = sample() * 2 * Math.PI;
+  const angle = sample() * 2 * Math.PI;
+  const shiftX = (sample() - 0.5) * 0.21;
+  const shiftY = (sample() - 0.5) * 0.21;
+  const scale = 0.88 + 0.28 * sample();
+  const strike = 0.9 + 0.4 * sample();
+  const bendStrength = 0.06 + 0.05 * sample();
   const c = Math.cos(angle);
   const s = Math.sin(angle);
   return (u, v) => {
-    const x = c * (u - 0.5) - s * (v - 0.5);
-    const y = s * (u - 0.5) + c * (v - 0.5);
+    const east = c * (u - 0.5) - s * (v - 0.5);
+    const north = s * (u - 0.5) + c * (v - 0.5);
+    const x = scale * east + shiftX + bendStrength * Math.sin(5 * north + phase);
+    const y = scale * north + shiftY + bendStrength * Math.sin(6 * east - phase);
     const wave = Math.sin(9 * x + 7 * y + phase);
     const detail = 0.023 * Math.sin(35 * x - 20 * y + phase)
       + 0.016 * Math.cos(49 * y + 17 * x - phase)
@@ -27,7 +40,7 @@ function heightfield(world, seed, variant) {
     const hill = (cx, cy, wx, wy) => gaussian(x - cx, wx) * gaussian(y - cy, wy);
 
     if (world === 0) {
-      const bend = y + 0.57 * x + 0.055 * Math.sin(13 * x + phase);
+      const bend = y + 0.57 * strike * x + 0.08 * Math.sin(11 * x + phase);
       if (variant === 1) {
         return -0.91 * gaussian(bend, 0.075) - 0.57 * gaussian(y - 0.77 * x - 0.17, 0.065)
           + 0.38 * hill(-0.25, 0.20, 0.28, 0.17) + 0.19 * wave + detail;
@@ -46,7 +59,7 @@ function heightfield(world, seed, variant) {
       const impact = (cx, cy, size) => {
         const dx = x - cx;
         const dy = (y - cy) * 0.82;
-        const radius = Math.hypot(dx, dy) / size;
+        const radius = Math.hypot(dx, dy * strike) / size;
         const rim = 1 + 0.045 * Math.sin(Math.atan2(dy, dx) * 6 + phase);
         return 0.47 * gaussian(radius - rim, 0.13) - 0.74 * gaussian(radius, 0.67);
       };
@@ -62,7 +75,7 @@ function heightfield(world, seed, variant) {
     }
 
     if (world === 2) {
-      const valley = y - 0.30 * x - 0.11 * Math.sin(8 * x + phase);
+      const valley = y - 0.30 * strike * x - 0.13 * Math.sin(8 * x + phase);
       const branch = y + 0.57 * x - 0.13 - 0.045 * Math.sin(14 * x - phase);
       if (variant === 1) {
         return 0.94 * Math.tanh(2.7 * hill(-0.17, 0.03, 0.32, 0.24))
@@ -81,7 +94,10 @@ function heightfield(world, seed, variant) {
     const warp = 1.3 * Math.sin(7 * x + 4 * y + phase) + 0.45 * Math.sin(15 * x - phase);
     const dunes = Math.sin(30 * y + 19 * x + warp);
     if (variant === 1) return 0.43 * dunes - 0.82 * hill(0.03, 0.03, 0.38, 0.29) + 0.25 * wave + detail;
-    if (variant === 2) return 0.46 * dunes + 0.44 * Math.sin(27 * x - 21 * y + warp) + 0.19 * wave + detail;
+    if (variant === 2) {
+      const crosswind = Math.sin(27 * x - 21 * y + warp);
+      return (0.49 + 0.12 * wave) * dunes + 0.38 * crosswind + 0.14 * wave + detail;
+    }
     return (0.63 + 0.19 * Math.cos(8 * x + phase)) * dunes + 0.27 * wave + 0.32 * x + detail;
   };
 }
@@ -174,9 +190,13 @@ function simplify(line, tolerance) {
     ...simplify(line.slice(split), tolerance)];
 }
 
-function svgPaths(paths, tolerance) {
+function svgPaths(paths, tolerance, compact = false) {
   return paths.map(({ line, closed }) => {
-    const points = simplify(line, tolerance).map(([x, y]) => [Math.round(x), Math.round(y)]);
+    // Even control coordinates give integer midpoints. The next quadratic
+    // can then reuse the reflected control point through SVG's smooth command.
+    const step = compact ? 2 : 1;
+    const points = simplify(line, tolerance)
+      .map(([x, y]) => [step * Math.round(x / step), step * Math.round(y / step)]);
     if (closed && points.length < 4) return '';
     const vertices = closed ? points.slice(0, -1) : points;
     if (points.length < 3) {
@@ -189,8 +209,13 @@ function svgPaths(paths, tolerance) {
     for (const [index, control] of steps.entries()) {
       const next = vertices[(index + (closed ? 1 : 2)) % vertices.length];
       const end = midpoint(control, next);
-      result += [control[0] - current[0], control[1] - current[1],
-        end[0] - current[0], end[1] - current[1]].join(' ') + ' ';
+      const destination = [end[0] - current[0], end[1] - current[1]];
+      if (!compact || index === 0) {
+        result += [control[0] - current[0], control[1] - current[1], ...destination].join(' ') + ' ';
+      } else {
+        if (index === 1) result = result.trimEnd() + 't';
+        result += destination.join(' ') + ' ';
+      }
       current = end;
     }
     return result.trimEnd().replace(/ (?=-)/g, '') + (closed ? 'Z' : 'L' + vertices.at(-1).join(' '));
@@ -209,6 +234,14 @@ function shadeRegion(path, minArea, minWidth) {
   }
   const area = Math.abs(twiceArea) / 2;
   return area >= minArea && 2 * area >= minWidth * perimeter;
+}
+
+function contourLength({ line }) {
+  let length = 0;
+  for (let i = 1; i < line.length; i++) {
+    length += Math.hypot(line[i][0] - line[i - 1][0], line[i][1] - line[i - 1][1]);
+  }
+  return length;
 }
 
 function reliefBands(field, range) {
@@ -249,9 +282,10 @@ export function surveyTerrain(world, seed, relief, sites) {
   const field = points.map(([x, y]) => height(x, y));
   const min = Math.min(...field);
   const range = Math.max(...field) - min;
-  const interval = Math.round(relief / 8);
-  const levels = Array.from({ length: 7 }, (_, level) =>
-    isolines(field, min + range * (level + 1) * interval / relief));
+  const interval = Math.max(1, Math.round(relief / 14));
+  const levels = Array.from({ length: Math.ceil(relief / interval) - 1 }, (_, level) =>
+    isolines(field, min + range * (level + 1) * interval / relief)
+      .map(path => ({ ...path, length: contourLength(path) })));
 
   const bands = reliefBands(field, range);
   const shading = bands.map(paths => {
@@ -267,11 +301,24 @@ export function surveyTerrain(world, seed, relief, sites) {
   const elevations = sites.map(({ x, y }) =>
     Math.round(relief * (height(x / mapWidth, y / mapHeight) - min) / range));
 
-  // Budget vector geometry so every selection remains a small polling payload.
-  for (let tolerance = 1.5; ; tolerance *= 1.3) {
-    const contours = levels.map(paths => svgPaths(paths, tolerance));
-    if (contours.join('').length + shading.join('').length <= 3420) {
-      return { feature: features[world][variant], contours, shading, interval, elevations };
+  // Give every elevation its longest line first, then spend the remaining
+  // payload on the largest secondary features without flattening the curves.
+  const budget = contourBudget - shading.join('').length;
+  for (let tolerance = 2.2; ; tolerance *= 1.25) {
+    const candidates = levels.map(paths => paths.filter(path => path.length >= 12)
+      .sort((a, b) => b.length - a.length)
+      .map(path => ({ length: path.length, svg: svgPaths([path], tolerance, true) }))
+      .filter(path => path.svg));
+    const contours = candidates.map(paths => paths[0]?.svg ?? '');
+    let remaining = budget - contours.join('').length;
+    if (remaining < 0) continue;
+    const extra = candidates.flatMap((paths, level) =>
+      paths.slice(1).map(path => ({ ...path, level }))).sort((a, b) => b.length - a.length);
+    for (const { svg, level } of extra) {
+      if (svg.length > remaining) continue;
+      contours[level] += svg;
+      remaining -= svg.length;
     }
+    return { feature: features[world][variant], contours, shading, interval, elevations };
   }
 }

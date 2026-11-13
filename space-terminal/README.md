@@ -36,7 +36,9 @@ fills its panel in every slot.
 
 These are local renders. The first seven previews are 800 × 480. The full-screen X landscape layout fits the original 5:3 artwork
 inside the panel. Survey maps use black stippling for shaded slopes on 1-bit
-displays and up to two gray relief tones on displays that support them.
+displays and up to two gray relief tones on displays that support them. The
+daily seed varies the orientation, size, and shape of the terrain within each
+landform family. Contour spacing follows the total elevation range.
 
 ## How it works
 
