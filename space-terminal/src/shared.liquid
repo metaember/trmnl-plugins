@@ -266,7 +266,7 @@
   }
 
   .terminal-screen, .terminal-screen * { box-sizing: border-box; font-family: "Departure Mono", monospace; }
-  .terminal-screen { position: relative; width: 800px; height: 480px; color: #000; background: #fff; }
+  :where(.layout).terminal-screen { position: relative; display: block; width: 800px; height: 480px; padding: 0; color: #000; background: #fff; }
   .terminal-screen h1, .terminal-screen p, .terminal-screen pre { margin: 0; }
   .terminal-board-frame { position: absolute; inset: 14px; border: 2px solid; padding: 20px 14px 0; }
   .terminal-board-header { height: 73px; display: flex; justify-content: space-between; }
@@ -528,6 +528,12 @@
     .board-heading-wide { display: none; }
     .board-heading-narrow { display: inline; }
     .terminal-fraction-meter strong { font-size: 1em; }
+  }
+  @container terminal-fraction (max-width: 285px) and (max-aspect-ratio: 11/10) {
+    .terminal-fraction-meters { grid-template-columns: minmax(0, 1fr); }
+    .terminal-fraction-meters .terminal-fraction-extended { display: none; }
+    .terminal-fraction-meter { padding-block: 3px; }
+    .terminal-fraction-meter .terminal-segments { height: clamp(6px, 2.3cqh, 16px); }
   }
   @container terminal-fraction (max-height: 179px) {
     .terminal-fraction-header, .terminal-fraction-footer { padding-block: 3px; }

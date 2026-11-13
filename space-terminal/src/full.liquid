@@ -1,6 +1,6 @@
 {% case screen %}
 {% when 'docking_clearance' %}
-<main class="terminal-screen st-dock">
+<main class="layout terminal-screen st-dock">
   <div class="st-dock-frame">
     <header class="st-dock-header">
       <h1>DOCKING CLEARANCE</h1>
@@ -26,7 +26,7 @@
 </main>
 {% when 'signal_intercept' %}
 {% assign signal_marker = signal.marker | plus: 0 | at_least: 8 | at_most: 492 %}
-<main class="terminal-screen st-signal">
+<main class="layout terminal-screen st-signal">
   <header class="st-signal-header"><h1>SIGNAL INTERCEPT</h1><span{% if signal.distress %} class="terminal-fraction-distress"{% endif %}>{{ signal.kind | default: 'ACQUIRED' | escape }}</span></header>
   <div class="st-signal-body">
     <svg class="st-signal-plot" viewBox="0 0 500 240" preserveAspectRatio="none" role="img" aria-label="Signal waveform with acquisition marker">
@@ -54,7 +54,7 @@
   <footer class="st-signal-footer">{% if signal.distress %}SOS / ... --- ... · {% endif %}REPEAT INTERVAL <strong>{{ signal.repeat_interval | escape }}</strong></footer>
 </main>
 {% when 'surface_survey' %}
-<main class="terminal-screen st-survey" aria-label="Surface Survey">
+<main class="layout terminal-screen st-survey" aria-label="Surface Survey">
   <div class="st-survey-plate">
     <div class="st-survey-chart">
       <header class="st-survey-head">
@@ -117,7 +117,7 @@
   </div>
 </main>
 {% when 'departure_board' %}
-<main class="terminal-screen">
+<main class="layout terminal-screen">
   <div class="terminal-board-frame">
     <header class="terminal-board-header">
       <div><h1>{{ board.title }}</h1><p>{{ board.subtitle }}</p></div>
@@ -145,7 +145,7 @@
   </div>
 </main>
 {% when 'system_status' %}
-<main class="terminal-screen terminal-status">
+<main class="layout terminal-screen terminal-status">
   <div class="terminal-status-id"><span>SYS.STATUS.v2.3</span><span>RES:800x480</span></div>
   <header class="terminal-status-header">
     <h1><strong>SYSTEM</strong> STATUS</h1>
@@ -189,7 +189,7 @@
   {% endfor %}
 </main>
 {% when 'mission_brief' %}
-<main class="terminal-screen terminal-brief">
+<main class="layout terminal-screen terminal-brief">
   <header class="terminal-brief-header">
     <p>&gt; MISSION BRIEFING</p><p>&gt; {{ brief.missionCode }}</p>
     <p>&gt; CLASSIFIED: LEVEL 3 <span class="terminal-brief-cursor"></span></p>
