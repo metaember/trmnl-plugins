@@ -146,7 +146,7 @@ function parseBrief(input, layout, webEnabled, image) {
 }
 
 function run(input) {
-  const settings = input.trmnl?.plugin_settings?.custom_fields_values ?? {};
+  const settings = input?.trmnl?.plugin_settings?.custom_fields_values ?? {};
   const key = String(settings.api_key ?? "").trim();
   const prompt = String(settings.prompt ?? "").trim();
   const city = String(settings.city ?? "").trim();

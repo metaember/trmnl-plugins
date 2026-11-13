@@ -67,6 +67,7 @@ test("a valid no-results response is a fresh brief even with a pinned list", () 
 test("setup and provider errors produce useful notices without exposing the key", () => {
   const input = (overrides) => ({ trmnl: { plugin_settings: { custom_fields_values: { ...fields, ...overrides } } } });
   assert.match(run(input({ api_key: "" })).notice, /API key/);
+  assert.match(run(null).notice, /API key/);
   assert.match(run(input({ preset: "custom" })).notice, /prompt/);
   assert.match(run(input({ city: "" })).notice, /city/);
   const result = run({ ...input({}), error: { code: 402, message: fields.api_key } });

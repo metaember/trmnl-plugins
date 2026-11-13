@@ -1,18 +1,17 @@
 ---
 name: AI Prompt Frame
-description: AI-generated e-paper cards
+description: Fresh cards from your prompts
 recipe_overview: |-
-  Write a prompt, set a refresh schedule, and turn the result into a brief,
-  chart, table, or captioned image card on your TRMNL display.
-  Start with Daily Brief for a few sourced things to do in your city, or write
-  a custom prompt for a topic you follow. Add dates, times, a city, or your
-  own notes and data using prompt variables.
+  Turn your TRMNL into a screen for a question worth asking again tomorrow.
+  Ask for three independent cinema screenings near you tonight, plot the
+  miles in your running log, or turn a project plan into a timeline of
+  upcoming milestones.
 
-  Choose a layout or let the model pick one. Show a short answer, list, quote,
-  timeline, table, or chart. Give the image card a public image URL and a
-  prompt for its caption. Set the refresh interval in TRMNL. Bring your own
-  OpenRouter key, with optional web search and page fetching billed to your
-  OpenRouter account.
+  Choose a layout or let the model pick one. Supply a public image URL for
+  a captioned photo card, add your own notes or numbers, or enable web search
+  for a brief with sources. Set the refresh schedule in TRMNL. The built-in
+  demo rotates through three screens from a fictional lunar outpost without
+  a key. Live generations use your own OpenRouter key.
 strategy: polling
 refresh_interval: 1440
 framework_version: 3.0.3
@@ -139,7 +138,8 @@ custom_fields:
 - keyname: api_key
   name: OpenRouter API key
   field_type: password
-  description: 'Get a key from <a href="https://openrouter.ai/settings/keys">OpenRouter</a>. Each generation is billed to your account.'
+  optional: true
+  description: 'Leave blank for the rotating demo. For live results, get a key from <a href="https://openrouter.ai/settings/keys">OpenRouter</a>. Each generation is billed to your account.'
 - keyname: preset
   name: Preset
   field_type: select
@@ -210,5 +210,9 @@ custom_fields:
   name: About AI Prompt Frame
   field_type: author_bio
   category: productivity,news
-  description: Turn a recurring question into a display card. Choose from answers, lists, articles, tables, charts, quotes, and images. Bring your own OpenRouter key and use TRMNL's refresh setting to control when it runs.
-  learn_more_url: https://github.com/metaember/trmnl-plugins/issues
+  description: >-
+    Find three things to do nearby tonight, chart your weekly running miles,
+    or turn project notes into a milestone timeline. Write the prompt, pick a
+    layout, and set when it refreshes. Start with the rotating lunar outpost
+    demo, then add your OpenRouter key for live results.
+  learn_more_url: https://github.com/metaember/trmnl-plugins/blob/main/prompt-frame/README.md

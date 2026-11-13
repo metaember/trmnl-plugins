@@ -35,19 +35,17 @@
 
 {% template brief_chart %}
   {% assign chart_id = "prompt-frame-chart" | append_random %}
-  {% assign chart_height = "h--[65cqh]" %}
   {% assign chart_points = brief.points %}
   {% if size == "banner" or size == "quadrant" %}
-    {% assign chart_height = "h--[59cqh]" %}
     {% if brief.mode == "bar" %}{% assign chart_points = brief.points | slice: 0, 5 %}{% endif %}
   {% endif %}
-  <div class="flex flex--row flex--between flex--center-y gap--small w--full">
+  <div class="flex flex--row flex--between flex--center-y gap--small w--full no-shrink">
     <span class="title {{ title_size }} text--left grow" data-clamp="1">{{ brief.headline | escape }}</span>
     {% if brief.value != blank %}
       <span class="label label--base no-shrink">{{ brief.value | escape }}</span>
     {% endif %}
   </div>
-  <div id="{{ chart_id }}" class="w--full {{ chart_height }}" data-chart-type="{{ brief.mode }}" data-points="{{ chart_points | json | escape }}">
+  <div id="{{ chart_id }}" class="w--full grow h--[0px]" data-chart-type="{{ brief.mode }}" data-points="{{ chart_points | json | escape }}">
     {% for point in chart_points limit: 3 %}
       <div class="label">{{ point.label | escape }} · {{ point.value }}</div>
     {% endfor %}
@@ -69,7 +67,8 @@
       if (!node || !window.Highcharts) return;
       const type = node.dataset.chartType;
       const points = JSON.parse(node.dataset.points);
-      const height = Math.floor(node.clientHeight) - 2;
+      const slotHeight = () => node.clientHeight - 2;
+      const height = slotHeight();
       const compact = height < 165 || node.clientWidth < 375;
       const ink = getComputedStyle(node).color;
       const rule = Highcharts.color(ink).setOpacity(0.26).get();
@@ -106,11 +105,34 @@
         }]
       });
       chart.renderer.boxWrapper.css({ display: "block" });
+      new ResizeObserver(() => {
+        const available = slotHeight();
+        if (available > 0 && available !== chart.chartHeight) chart.setSize(undefined, available, false);
+      }).observe(node);
     })();
   </script>
 {% endtemplate %}
 
 {% template brief_screen %}
+  {% assign key = trmnl.plugin_settings.custom_fields_values.api_key | strip %}
+  {% assign demo = false %}
+  {% if brief == blank and notice == blank or notice == "Add an OpenRouter API key in plugin settings." %}
+    {% if key == blank or key == '0' %}{% assign demo = true %}{% endif %}
+  {% endif %}
+  {% if demo %}
+    {% assign demo_day = 'now' | date: '%s' | divided_by: 86400 | modulo: 3 %}
+    {% capture demo_json %}
+      {% case demo_day %}
+        {% when 0 %}
+          {"mode":"line","headline":"Lunar power","value":"kW","answer":"Solar output peaks at 72 kW before the evening handoff.","points":[{"label":"06:00","value":12},{"label":"09:00","value":41},{"label":"12:00","value":72},{"label":"15:00","value":56},{"label":"18:00","value":19}]}
+        {% when 1 %}
+          {"mode":"table","headline":"Lunar crew schedule","columns":["UTC","Task"],"rows":[["07:20","Solar check"],["10:45","Rover survey"],["14:10","Supply drop"]]}
+        {% else %}
+          {"mode":"list","headline":"Lunar outpost shift brief","items":[{"title":"Rover cleared for the crater rim","detail":"Survey crew departs at 09:40 UTC."},{"title":"Supply lander due at 14:10","detail":"Keep the south pad clear for arrival."},{"title":"Switch to battery at dusk","detail":"Finish the antenna check before handoff."}]}
+      {% endcase %}
+    {% endcapture %}
+    {% assign brief = demo_json | parse_json %}
+  {% endif %}
   {% assign title_size = "title--large lg:title--xlarge" %}
   {% assign row_title_size = "title--small lg:title--base" %}
   {% assign detail_size = "description--medium lg:description--large" %}
@@ -167,8 +189,8 @@
     {% endif %}
   {% endif %}
 
-  <div class="layout layout--col">
-    <div class="flex flex--col flex--stretch-x gap--small w--full {{ inset }}">
+  <div class="layout layout--col{% if brief.points %} layout--stretch-x{% endif %}">
+    <div class="flex flex--col flex--stretch-x gap--small w--full {{ inset }}{% if brief.points %} h--full{% endif %}">
       {% if brief.mode == "image" %}
         {% render "brief_image" with brief: brief, size: size, title_size: title_size, source_size: source_size %}
       {% elsif brief.points %}
@@ -179,20 +201,21 @@
         {% if size == "banner" or size == "quadrant" %}
           {% assign row_limit = 3 %}
           {% assign table_size = "table--small" %}
+          {% if demo %}{% assign row_limit = 2 %}{% endif %}
         {% endif %}
         {% render "brief_heading" with headline: brief.headline, title_size: title_size, title_lines: 1 %}
         <table class="table {{ table_size }} w--full">
           <thead><tr>
-            {% for column in brief.columns %}<th scope="col"><span class="title title--small" data-clamp="1">{{ column | escape }}</span></th>{% endfor %}
+            {% for column in brief.columns %}<th scope="col"><span class="title title--small{% if demo and forloop.first %} pr--3{% endif %}" data-clamp="1">{{ column | escape }}</span></th>{% endfor %}
           </tr></thead>
           <tbody>
             {% for row in brief.rows limit: row_limit %}
-              <tr>{% for cell in row %}<td><span class="label label--base" data-clamp="1">{{ cell | escape }}</span></td>{% endfor %}</tr>
+              <tr>{% for cell in row %}<td><span class="label label--base{% if demo and forloop.first %} pr--3{% endif %}" data-clamp="1">{{ cell | escape }}</span></td>{% endfor %}</tr>
             {% endfor %}
           </tbody>
         </table>
         <div class="flex flex--row flex--between flex--center-y">
-          {% if brief.rows.size > row_limit %}<span class="label label--small">{{ row_limit }} of {{ brief.rows.size }} rows</span>{% endif %}
+          {% if brief.rows.size > row_limit and demo == false %}<span class="label label--small">{{ row_limit }} of {{ brief.rows.size }} rows</span>{% endif %}
           {% render "brief_source" with source: brief.source, source_size: source_size %}
         </div>
       {% elsif brief.mode == "article" %}
@@ -282,6 +305,9 @@
       {% else %}
         <span class="title {{ title_size }}">AI Prompt Frame</span>
         <span class="description" data-clamp="3">{{ notice | default: "Waiting for the first brief." | escape }}</span>
+      {% endif %}
+      {% if demo %}
+        <span class="label label--small">Demo data · Add an OpenRouter API key in plugin settings.</span>
       {% endif %}
     </div>
   </div>
