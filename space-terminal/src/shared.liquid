@@ -827,10 +827,6 @@
     line-height: 35px;
     font-weight: normal;
   }
-  .st-relief-light, .st-relief-deep { fill: none; }
-  .screen--2bit .st-relief-deep { fill: #aaa; }
-  .screen--4bit .st-relief-light, .screen--color-full .st-relief-light { fill: #ddd; }
-  .screen--4bit .st-relief-deep, .screen--color-full .st-relief-deep { fill: #bbb; }
   .st-survey-map-ticks {
     fill: none;
     stroke: #000;
@@ -903,6 +899,27 @@
 {% endfor %}
 {% endtemplate %}
 
+{% template terminal_survey_relief %}
+  {% if depth >= 4 %}
+    <path fill="#ddd" fill-rule="evenodd" d="{{ survey.shading[0] | escape }}"/>
+    <path fill="#bbb" fill-rule="evenodd" d="{{ survey.shading[1] | escape }}"/>
+  {% elsif depth == 2 %}
+    <path fill="#aaa" fill-rule="evenodd" d="{{ survey.shading[1] | escape }}"/>
+  {% else %}
+    <defs>
+      <pattern id="survey-light-stipple" width="6" height="6" patternUnits="userSpaceOnUse">
+        <path d="M0 0h1.6v1.6H0z M3 3h1.6v1.6H3z" fill="#000"/>
+      </pattern>
+      <pattern id="survey-deep-stipple" width="4" height="4" patternUnits="userSpaceOnUse">
+        <rect width="4" height="4" fill="#fff"/>
+        <path d="M0 0h1.6v1.6H0z M2 2h1.6v1.6H2z" fill="#000"/>
+      </pattern>
+    </defs>
+    <path fill="url(#survey-light-stipple)" fill-rule="evenodd" d="{{ survey.shading[0] | escape }}"/>
+    <path fill="url(#survey-deep-stipple)" fill-rule="evenodd" d="{{ survey.shading[1] | escape }}"/>
+  {% endif %}
+{% endtemplate %}
+
 {% template terminal_survey_compact_map %}
 {% capture map_svg %}
 {% if tall %}
@@ -912,13 +929,8 @@
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 350" preserveAspectRatio="xMidYMid slice">
   <g>
 {% endif %}
-  {% if depth >= 4 %}
-    <path fill="#ddd" fill-rule="evenodd" d="{{ survey.shading[0] | escape }}"/>
-    <path fill="#bbb" fill-rule="evenodd" d="{{ survey.shading[1] | escape }}"/>
-  {% elsif depth == 2 %}
-    <path fill="#aaa" fill-rule="evenodd" d="{{ survey.shading[1] | escape }}"/>
-  {% endif %}
-  <g fill="none" stroke="black" stroke-width="1.6" stroke-linejoin="round">
+  {% render "terminal_survey_relief" with survey: survey, depth: depth %}
+  <g fill="none" stroke="black" stroke-width="1.8" stroke-linejoin="round">
     {% for contour in survey.contours %}
       {% assign index_contour = forloop.index | modulo: 3 %}
       <path{% if index_contour == 0 %} stroke-width="2.4"{% endif %} d="{{ contour | escape }}"/>

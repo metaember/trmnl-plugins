@@ -34,10 +34,9 @@ fills its panel in every slot.
 | **Horizontal half, landscape** | **Vertical half, landscape** |
 | ![Boarding Pass across a wide TRMNL X half slot](docs/screenshots/boarding-pass-x-half-horizontal.png) | ![Mission Brief in a tall TRMNL X half slot](docs/screenshots/mission-brief-x-half-vertical.png) |
 
-These are local renders. The first seven previews use the 800 × 480 OG
-profile. The full-screen X landscape layout fits the original 5:3 artwork
-inside the panel. Survey maps use contour lines at 1 bit and add up to two
-bands of gray relief as the palette allows.
+These are local renders. The first seven previews are 800 × 480. The full-screen X landscape layout fits the original 5:3 artwork
+inside the panel. Survey maps use black stippling for shaded slopes on 1-bit
+displays and up to two gray relief tones on displays that support them.
 
 ## How it works
 

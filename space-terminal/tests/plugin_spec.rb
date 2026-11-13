@@ -22,7 +22,10 @@ RSpec.describe 'Space Terminal' do
             (() => {
               const maps = [...document.querySelectorAll('.terminal-fraction-survey-map img')];
               const visible = maps.filter(map => map.getBoundingClientRect().width > 0);
-              return visible.length === 1 && visible[0].complete && visible[0].naturalWidth > 0;
+              if (visible.length !== 1 || !visible[0].complete || visible[0].naturalWidth === 0) return false;
+              const svg = atob(visible[0].src.split(',')[1]);
+              return svg.includes('fill="url(#survey-deep-stipple)"') ||
+                svg.includes('fill="#aaa"') || svg.includes('fill="#bbb"');
             })()
           JS
         end

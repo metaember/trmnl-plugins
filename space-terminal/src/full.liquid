@@ -62,8 +62,7 @@
         <p>{{ survey.world | escape }} / SECTOR {{ survey.sector | escape }}</p>
       </header>
       <svg class="st-survey-map" viewBox="0 0 560 350" preserveAspectRatio="none" role="img" aria-label="Topographic contours with Site A{% if survey.site_b %} and Site B{% endif %} marked">
-        <path class="st-relief-light" fill-rule="evenodd" d="{{ survey.shading[0] | escape }}"/>
-        <path class="st-relief-deep" fill-rule="evenodd" d="{{ survey.shading[1] | escape }}"/>
+        {% render "terminal_survey_relief" with survey: survey, depth: survey_depth %}
         <g class="st-survey-contours">
           {% for contour in survey.contours %}
             {% assign contour_index = forloop.index | modulo: 3 %}
