@@ -12,6 +12,7 @@ layout improvements, and pull requests are welcome.
 | [LLM Benchmark Leaders](llm-benchmark-leaders/) | [Install](https://trmnl.com/recipes/101445) | Published leaderboard with portability fixes | CC-BY-4.0 |
 | [OpenRouter Drops](openrouter-drops/) | Not yet published as a recipe | New model listings, filtering and cost comparisons | MIT |
 | [OpenRouter Spend](openrouter-spend/) | Not yet published as a recipe | API key budgets and optional model, key, and token history | MIT |
+| [Weather Window](weather-window/) | Not yet published as a recipe | Illustrated scenes with local weather and configurable window frames | MIT |
 | [AI Prompt Frame](prompt-frame/) | Not yet published as a recipe | Scheduled prompts rendered as briefs, charts, tables, and image cards | MIT |
 
 Each folder is a normal `trmnlp` project with `src/`, `.trmnlp.yml`, tests,

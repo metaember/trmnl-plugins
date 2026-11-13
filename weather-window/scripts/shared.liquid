@@ -1,0 +1,129 @@
+<style>
+  .ww-window.layout {
+    --ww-edge: #414141;
+    --ww-top: #292929;
+    --ww-sill: #222;
+    --ww-footer: #000;
+    --ww-ink: #fff;
+    --ww-jamb: max(3px, 1.4cqw);
+    --ww-depth: max(6px, 3.6cqw);
+    width: 100%; height: 100%; padding: 0; gap: 0;
+    display: flex; flex-direction: column; align-items: stretch;
+    background: var(--ww-footer); color: var(--ww-ink); overflow: hidden;
+  }
+  .ww-window[data-finish="slate"] { --ww-edge: #616161; --ww-top: #454545; --ww-sill: #414141; --ww-footer: #000; }
+  .ww-window[data-finish="light"] { --ww-edge: #c9c9c9; --ww-top: #aaa; --ww-sill: #929292; --ww-footer: #fff; --ww-ink: #151515; }
+  .ww-window[data-finish="outline"] { --ww-edge: #333; --ww-top: #222; --ww-sill: #fff; --ww-footer: #fff; --ww-ink: #111; }
+  .ww-window[data-short="true"] { --ww-depth: max(5px, 1.4cqw); }
+  .ww-window[data-frame="none"] { --ww-jamb: 0px; --ww-depth: 0px; }
+  .ww-view { position: relative; flex: 1 1 auto; min-height: 0; background: #888; }
+  .ww-view::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    border: solid var(--ww-edge);
+    border-width: var(--ww-jamb) var(--ww-jamb) var(--ww-depth);
+    border-top-color: var(--ww-top); border-bottom-color: var(--ww-sill);
+  }
+  .ww-glass { position: absolute; inset: var(--ww-jamb) var(--ww-jamb) var(--ww-depth); overflow: hidden; }
+  .ww-glass img, .ww-glass canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .ww-glass img { object-fit: cover; }
+  .ww-glass img[data-focus="top"] { object-position: center top; }
+  .ww-window[data-short="true"] .ww-glass img[data-focus="top"] { object-position: center 30%; }
+  .ww-glass img[data-focus="bottom"] { object-position: center bottom; }
+  .ww-glass[data-effect="drizzle"] img { filter: brightness(.82); }
+  .ww-glass[data-effect="rain"] img { filter: brightness(.72); }
+  .ww-glass[data-effect="cloudy"] img { filter: brightness(.87); }
+  .ww-glass[data-effect="storm"] img { filter: brightness(.53); }
+  .ww-glass[data-dark-scene="true"] img { filter: brightness(.29) contrast(1.15); }
+  .ww-rails { position: absolute; inset: 0; pointer-events: none; }
+  .ww-window:is([data-frame="sash"], [data-frame="panes"]) .ww-rails::after,
+  .ww-window[data-frame="panes"] .ww-rails::before {
+    content: ""; position: absolute; background: var(--ww-edge); box-shadow: inset 0 1px var(--ww-top);
+  }
+  .ww-window:is([data-frame="sash"], [data-frame="panes"]) .ww-rails::after {
+    inset: calc(50% - var(--ww-jamb) / 2) 0 auto; height: var(--ww-jamb);
+  }
+  .ww-window[data-frame="panes"] .ww-rails::before {
+    inset: 0 auto 0 calc(50% - var(--ww-jamb) / 2); width: var(--ww-jamb);
+  }
+  .ww-footer { flex: 0 0 auto; padding: 1.1cqw 2cqw; line-height: 1.1; font-weight: 570; }
+  .ww-now { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.4em; font-size: clamp(12px, 3.1cqw, 28px); }
+  .ww-now strong { font-size: 1.6em; }
+  .ww-next { margin-inline-start: auto; font-size: .82em; }
+  .ww-words { font-size: clamp(11px, 2.8cqw, 22px); }
+  .ww-list { display: flex; gap: 0; text-align: center; font-size: clamp(12px, 2.2cqw, 18px); }
+  .ww-list > div { flex: 1 1 0; min-width: 0; padding-inline: .2em; }
+  .ww-list > div + div { border-inline-start: 1px solid currentColor; }
+  .ww-list span, .ww-list strong { display: block; }
+  .ww-list strong { font-size: 1.2em; }
+  .ww-list small { font-size: .88em; line-height: 1.15; }
+  .ww-status { display: block; font-size: clamp(9px, 1.5cqw, 13px); margin-top: .15em; }
+  .ww-empty.layout { justify-content: center; text-align: center; padding: 12px; }
+</style>
+
+{% template ww_display %}
+  {% if data.scene.src == blank %}
+    <div class="layout layout--col ww-empty">
+      <span class="title">Weather Window</span>
+      <span class="label">Waiting for Weather Window to refresh.</span>
+    </div>
+  {% else %}
+    <div class="layout ww-window" data-frame="{{ data.frame | escape }}" data-short="{{ short }}" data-finish="{{ data.finish | escape }}">
+      <div class="ww-view" aria-label="{{ data.scene.name | escape }}">
+        <div class="ww-glass" data-effect="{{ data.overlay.effect | escape }}"
+          {% if data.overlay.isNight and data.overlay.nightLit == false %}data-dark-scene="true"{% endif %}>
+          {% assign lighthouse = 'data:image/webp;base64,/* lighthouse preview */' %}
+          {% assign scene_src = data.scene.src %}
+          {% if scene_src == data.scene.fallback %}{% assign scene_src = lighthouse %}{% endif %}
+          <img class="image image-dither" src="{{ scene_src | escape }}" alt="{{ data.scene.name | escape }}"
+            data-focus="{{ data.scene.focus | escape }}" data-fallback="{{ lighthouse }}" referrerpolicy="no-referrer">
+          {% if data.overlay.effect %}
+            <canvas width="800" height="400" data-weather="{{ data.overlay | json | escape }}" aria-hidden="true"></canvas>
+          {% endif %}
+          <div class="ww-rails" aria-hidden="true"></div>
+        </div>
+      </div>
+      {% if data.footer != 'none' %}
+        <div class="ww-footer">
+          {% case data.footer %}
+            {% when 'weekly' %}
+              <div class="ww-list" aria-label="Weekly forecast">
+                {% for day in data.weather.week limit: days %}
+                  <div><strong>{{ day.day | escape }}</strong><span>{{ day.condition | escape }}</span><small>{{ day.high | escape }} {{ day.low | escape }}</small></div>
+                {% endfor %}
+              </div>
+            {% when 'hourly' %}
+              <div class="ww-list" aria-label="Hourly forecast">
+                <div><strong>{{ data.weather.temperature | escape }}</strong><span>{{ data.weather.label | escape }}</span></div>
+                {% for hour in data.weather.hourly limit: hours %}
+                  <div><strong>{{ hour.temperature | escape }}</strong><span>{{ hour.time | escape }}</span><small>{{ hour.condition | escape }}</small></div>
+                {% endfor %}
+              </div>
+            {% when 'words' %}
+              <div class="ww-words">{{ data.weather.summary | escape }}</div>
+            {% when 'details' %}
+              <div class="ww-list" aria-label="Weather details">
+                <div><strong>{{ data.weather.temperature | escape }}</strong><span>{{ data.weather.label | escape }}</span></div>
+                <div><strong>{{ data.weather.high | escape }} / {{ data.weather.low | escape }}</strong><span>High / Low</span></div>
+                {% unless compact %}
+                  <div><strong>{{ data.weather.wind | escape }}</strong><span>Wind</span></div>
+                  <div><strong>{{ data.weather.precipitation | escape }}</strong><span>Rain chance</span></div>
+                {% endunless %}
+              </div>
+            {% else %}
+              <div class="ww-now">
+                <strong>{{ data.weather.temperature | escape }}</strong>
+                <span>{{ data.weather.label | escape }}</span>
+                {% if data.footer == 'current' and compact == false %}
+                  <span class="ww-next">{{ data.weather.next | escape }}</span>
+                {% endif %}
+              </div>
+          {% endcase %}
+          {% if data.status != blank %}<small class="ww-status">{{ data.status | escape }}</small>{% endif %}
+        </div>
+      {% elsif data.status != blank %}
+        <div class="ww-footer"><small class="ww-status">{{ data.status | escape }}</small></div>
+      {% endif %}
+    </div>
+    <script>/* weather overlay */</script>
+  {% endif %}
+{% endtemplate %}
