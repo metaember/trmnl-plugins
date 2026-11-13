@@ -1,0 +1,43 @@
+{
+  "default_preview": {
+    "now": "2026-11-12T20:00:00Z",
+    "expect_text": "Set a location",
+    "mocks": {
+      "https://trmnl.com/custom_plugin_example_data.json": {
+        "json": {}
+      }
+    }
+  },
+  "scenarios": {
+    "live_drizzle": {
+      "now": "2026-11-12T20:00:00Z",
+      "expect_text": "Drizzle",
+      "custom_fields": {
+        "location": "40.71,-74.01",
+        "landscape": "lighthouse-headland",
+        "footer": "weekly"
+      },
+      "mocks": {
+        "https://api.open-meteo.com/v1/forecast?latitude=40.71&longitude=-74.01&timezone=auto&timeformat=unixtime&temperature_unit=fahrenheit&wind_speed_unit=mph&current=temperature_2m,is_day,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=7": {
+          "json_file": "tests/fixtures/open-meteo-drizzle.json"
+        }
+      }
+    },
+    "weather_unavailable": {
+      "now": "2026-11-12T20:00:00Z",
+      "expect_text": "Weather unavailable",
+      "custom_fields": {
+        "location": "40.71,-74.01",
+        "landscape": "lighthouse-headland"
+      },
+      "mocks": {
+        "https://api.open-meteo.com/v1/forecast?latitude=40.71&longitude=-74.01&timezone=auto&timeformat=unixtime&temperature_unit=fahrenheit&wind_speed_unit=mph&current=temperature_2m,is_day,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=7": {
+          "json": {
+            "error": true,
+            "reason": "Forecast unavailable"
+          }
+        }
+      }
+    }
+  }
+}

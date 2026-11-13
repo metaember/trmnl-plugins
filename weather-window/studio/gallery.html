@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scene Gallery · Weather Window</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./gallery.css" />
+  </head>
+  <body>
+    <main class="workspace scene-gallery">
+      <header class="heading heading-with-link">
+        <h1>Scene Gallery</h1>
+        <a class="heading-link" href="./">Weather Window</a>
+      </header>
+      <section class="gallery-filters" aria-label="Scene filters">
+        <label class="choice">
+          <span>Collection</span>
+          <select id="collection"><option value="">All collections</option></select>
+        </label>
+        <label class="choice">
+          <span>Sort</span>
+          <select id="sort">
+            <option value="catalog">Catalog order</option>
+            <option value="newest">Newest first</option>
+            <option value="name">Name A–Z</option>
+          </select>
+        </label>
+        <label class="choice gallery-search">
+          <span>Search</span>
+          <input id="search" type="search" placeholder="Scene name" />
+        </label>
+      </section>
+      <p id="scene-count" class="scene-count" role="status"></p>
+      <ul id="scene-grid" class="scene-grid" aria-label="Scenes"></ul>
+    </main>
+    <script type="module" src="./gallery.js"></script>
+  </body>
+</html>

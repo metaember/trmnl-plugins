@@ -1,0 +1,27 @@
+{
+  "name": "weather-window",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test",
+    "build": "node scripts/build-overlay.mjs && node scripts/build-transform.mjs",
+    "scene:generate": "node scripts/generate-scene.mjs",
+    "studio": "vite --config studio/vite.config.mjs",
+    "build:studio": "vite build --config studio/vite.config.mjs"
+  },
+  "dependencies": {
+    "suncalc": "2.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "5.0.4",
+    "esbuild": "0.25.12",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "vite": "6.4.6"
+  }
+}

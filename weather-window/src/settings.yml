@@ -1,0 +1,212 @@
+name: Weather Window
+description: Illustrated views of local weather
+strategy: polling
+polling_verb: get
+serverless_language: node
+polling_url: |
+  {%- assign coordinates = location | strip | split: ',' -%}
+  {%- assign weather_mode = weather | default: 'live' -%}
+  {%- assign gallery = scene_url | strip -%}
+  {%- assign github_prefix = gallery | slice: 0, 19 -%}
+  {%- if github_prefix == 'https://github.com/' and gallery contains '/blob/' -%}
+    {%- assign gallery = gallery | replace_first: 'https://github.com/', 'https://raw.githubusercontent.com/' | replace_first: '/blob/', '/' -%}
+  {%- endif -%}
+  {%- assign raw_prefix = gallery | slice: 0, 34 -%}
+  {%- assign poll_gallery = false -%}
+  {%- if source == 'gallery' and raw_prefix == 'https://raw.githubusercontent.com/' -%}
+    {%- assign poll_gallery = true -%}
+  {%- endif -%}
+  {%- assign poll_forecast = false -%}
+  {%- if coordinates.size == 2 -%}
+    {%- if weather_mode == 'live' or weather_mode == 'auto' -%}
+      {%- assign poll_forecast = true -%}
+    {%- endif -%}
+  {%- endif -%}
+  {% if poll_forecast %}
+  https://api.open-meteo.com/v1/forecast?latitude={{ coordinates | first | strip | url_encode }}&longitude={{ coordinates | last | strip | url_encode }}&timezone=auto&timeformat=unixtime&temperature_unit=fahrenheit&wind_speed_unit=mph&current=temperature_2m,is_day,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=7
+  {% elsif poll_gallery == false %}
+  https://trmnl.com/custom_plugin_example_data.json
+  {% endif %}
+  {% if poll_gallery %}
+  {{ gallery | split: '#' | first | strip_newlines | strip }}
+  {% endif %}
+refresh_interval: 15
+framework_version: 3.3.0
+dark_mode: 'no'
+no_screen_padding: 'yes'
+custom_fields:
+  - keyname: location
+    field_type: lat_lon
+    name: Location
+    optional: true
+    description: Search for a city or postal code. Coordinates go to Open-Meteo for the forecast. Leave blank for sample weather.
+  - keyname: source
+    field_type: select
+    name: Background source
+    default: stock
+    options:
+      - Built-in scenes: stock
+      - Custom gallery: gallery
+      - Custom image: image
+    conditional_validation:
+      - when: gallery
+        visible: [scene_url]
+      - when: image
+        visible: [scene_url, scene_has_weather]
+  - keyname: scene_url
+    field_type: url
+    name: Gallery or image URL
+    optional: true
+    description: Public GitHub URL of a version 1 gallery manifest, or an HTTPS image URL in Custom image mode.
+  - keyname: scene_has_weather
+    field_type: boolean
+    name: Custom image already shows weather
+    optional: true
+    default: false
+    description: Leave the uploaded image as-is while showing live conditions in the footer.
+  - keyname: collection
+    field_type: select
+    name: Collection
+    group: Appearance
+    default: "Quiet views"
+    description: "Filters the available scene pool."
+    options:
+      - "All scenes": "all"
+      - "Quiet views": "Quiet views"
+      - "Fantasy": "Fantasy"
+      - "Cyberpunk": "Cyberpunk"
+      - "Real places": "Real places"
+  - keyname: landscape
+    field_type: select
+    name: Landscape
+    group: Appearance
+    default: "@newer"
+    options:
+      - "Random": "random"
+      - "Random · newer": "@newer"
+      - "Winter hills": "hills"
+      - "Rocky coast": "coast"
+      - "Alpine lake": "lake"
+      - "Desert mesas": "desert"
+      - "City rooftops": "city"
+      - "Redwood grove": "grove"
+      - "Harbor village": "harbor"
+      - "Rolling farmland": "farmland"
+      - "Basalt falls": "basalt-falls"
+      - "Highland moor": "highland-moor"
+      - "Salt flats": "salt-flats"
+      - "Cypress marsh": "cypress-marsh"
+      - "Glacier valley": "glacier-valley"
+      - "Volcanic plateau": "volcanic-plateau"
+      - "Stone bridge": "stone-bridge"
+      - "Canal towpath": "canal-towpath"
+      - "Lighthouse headland": "lighthouse-headland"
+      - "Orchard rows": "orchard-rows"
+      - "Floating Isles": "floating-isles"
+      - "Moonstone Ruins": "moonstone-ruins"
+      - "Skyrail District": "skyrail-district"
+      - "Neon Canal": "neon-canal"
+      - "Paris · Eiffel Tower": "paris-eiffel-tower"
+      - "Golden Gate Bridge": "golden-gate-bridge"
+      - "Lanternwood": "lanternwood"
+      - "Wyvern Pass": "wyvern-pass"
+      - "Crystal Basin": "crystal-basin"
+      - "Drowned Palace": "drowned-palace"
+      - "Megablock Courtyard": "megablock-courtyard"
+      - "Corporate Spire": "corporate-spire"
+      - "Badlands Relay": "badlands-relay"
+      - "Tokyo · Shibuya Crossing": "tokyo-shibuya"
+      - "New York · Midtown": "new-york-midtown"
+      - "Sydney · Opera House": "sydney-harbour"
+      - "Rio · Sugarloaf": "rio-sugarloaf"
+      - "Rush Hour Concourse": "rush-hour-concourse"
+      - "Megablock Block Party": "megablock-block-party"
+      - "Arcade Strip": "arcade-strip"
+      - "Shift Change": "shift-change"
+      - "Kite Festival": "kite-festival"
+      - "Guild Docks": "guild-docks"
+      - "Istanbul · Eminönü Ferries": "istanbul-eminonu"
+      - "Night Market": "night-market"
+  - keyname: frame
+    field_type: select
+    name: Frame
+    group: Appearance
+    default: "none"
+    options:
+      - "Picture window": "picture"
+      - "Double-hung": "sash"
+      - "Four-pane window": "panes"
+      - "Frameless": "none"
+      - "Random": "random"
+  - keyname: finish
+    field_type: select
+    name: Sill finish
+    group: Appearance
+    default: "dark"
+    options:
+      - "Charcoal": "dark"
+      - "Slate": "slate"
+      - "Limestone": "light"
+      - "Outline": "outline"
+      - "Random": "random"
+  - keyname: footer
+    field_type: select
+    name: Forecast footer
+    group: Appearance
+    default: "current"
+    options:
+      - "Now + outlook": "current"
+      - "Minimal": "minimal"
+      - "In words": "words"
+      - "Hourly": "hourly"
+      - "Weekly": "weekly"
+      - "Weather details": "details"
+      - "Hidden": "none"
+      - "Random": "random"
+  - keyname: weather
+    field_type: select
+    name: Weather
+    group: Forecast
+    default: "live"
+    options:
+      - "Automatic": "auto"
+      - "Live weather": "live"
+      - "Random sample": "random"
+      - "Clear": "clear"
+      - "Partly cloudy": "partlyCloudy"
+      - "Overcast": "overcast"
+      - "Drizzle": "drizzle"
+      - "Light rain": "rain"
+      - "Steady rain": "steadyRain"
+      - "Heavy rain": "heavyRain"
+      - "Thunderstorm": "storm"
+      - "Flurries": "flurries"
+      - "Snow": "snow"
+      - "Heavy snow": "heavySnow"
+      - "Light mist": "mist"
+      - "Fog": "fog"
+      - "Dense fog": "denseFog"
+      - "Clear night": "night"
+  - keyname: temperature_unit
+    field_type: select
+    name: Temperature
+    group: Forecast
+    default: "F"
+    options:
+      - "Fahrenheit": "F"
+      - "Celsius": "C"
+  - keyname: wind_unit
+    field_type: select
+    name: Wind speed
+    group: Forecast
+    default: "mph"
+    options:
+      - "mph": "mph"
+      - "km/h": "km/h"
+  - keyname: author_bio
+    name: About Weather Window
+    field_type: author_bio
+    category: weather
+    description: Mix illustrated landscapes, local weather, window frames and forecast footers. Forecast data from Open-Meteo.
+    github_url: https://github.com/metaember/trmnl-plugins
+    learn_more_url: https://github.com/metaember/trmnl-plugins/blob/main/weather-window/README.md
