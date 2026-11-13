@@ -1412,7 +1412,8 @@ var WeatherWindow = (() => {
     const manifest = responses.find((response) => response?.version === 1 && Array.isArray(response.scenes));
     return readManifest(manifest).map((scene) => ({ ...scene, src: sceneUrl(scene.image, null, base) }));
   }
-  function weatherWindow(input = {}, date = /* @__PURE__ */ new Date()) {
+  function weatherWindow(input, date = /* @__PURE__ */ new Date()) {
+    if (!input || typeof input !== "object" || Array.isArray(input)) input = {};
     const plugin = input.trmnl?.plugin_settings;
     const settings = { ...plugin?.custom_fields_values, instance: plugin?.id };
     const location = String(settings.location ?? "").trim();

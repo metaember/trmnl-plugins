@@ -20,6 +20,7 @@ test("the shipped defaults render a lighthouse and sample weather with no foreca
   assert.match(result.scene.src, /lighthouse-headland\.webp$/);
   assert.equal(result.weather.label, "Snow");
   assert.match(result.status, /Set a location/);
+  assert.equal(run(null).weather_window.status, result.status);
 });
 
 test("the transform uses TRMNL's polled forecast for all footer data", () => {

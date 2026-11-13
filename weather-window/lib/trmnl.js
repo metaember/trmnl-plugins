@@ -23,7 +23,8 @@ function polledGallery(url, responses) {
   return readManifest(manifest).map(scene => ({ ...scene, src: sceneUrl(scene.image, null, base) }));
 }
 
-export function weatherWindow(input = {}, date = new Date()) {
+export function weatherWindow(input, date = new Date()) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) input = {};
   const plugin = input.trmnl?.plugin_settings;
   const settings = { ...plugin?.custom_fields_values, instance: plugin?.id };
   const location = String(settings.location ?? "").trim();
